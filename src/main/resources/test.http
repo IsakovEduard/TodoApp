@@ -1,0 +1,9 @@
+POST http://localhost:8080/createTask
+Content-Type: application/json
+
+{
+  "id": "123",
+  "title": "user",
+  "description": "boo",
+  "dueDate": "2025-09-06T14:30:00"
+}
