@@ -28,6 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
+        <openapi-generator.version>7.5.0</openapi-generator.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -54,6 +55,38 @@
             <artifactId>javax.inject</artifactId>
             <version>1</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+
+        <!-- Jakarta Validation API -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
+        <!-- Jakarta Annotation API -->
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+
+        <!-- Jackson (optional, usually included by spring-boot-starter-web) -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.2.4</version>
+        </dependency>
+
 	</dependencies>
 
 	<build>
@@ -62,6 +95,45 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>7.5.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Path to your YAML file -->
+                            <inputSpec>${project.basedir}/src/main/java/com/todo/api/task_management.yaml</inputSpec>
+
+                            <generatorName>spring</generatorName>
+
+                            <!-- Package names for generated classes -->
+                            <apiPackage>com.todo.api</apiPackage>
+                            <modelPackage>com.todo.model</modelPackage>
+
+                            <!-- Use your custom template folder for models -->
+<!--                            <templateDirectory>${project.basedir}/src/main/resources/openapi-templates</templateDirectory>-->
+
+                            <!-- Generate only interfaces for APIs -->
+<!--                            <interfaceOnly>true</interfaceOnly>-->
+                            <!-- Optional: skip tests -->
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <configOptions>
+                                <interfaceOnly>true</interfaceOnly>
+                                <skipDefaultInterface>true</skipDefaultInterface>
+                                <library>spring-boot</library>
+                                <useJakartaEe>true</useJakartaEe>
+                                <dateLibrary>java8-localdatetime</dateLibrary>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
 

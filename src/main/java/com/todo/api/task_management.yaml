@@ -1,0 +1,70 @@
+openapi: 3.0.1
+info:
+  title: Task API
+  version: 1.0.0
+paths:
+  /task-management/:
+    get:
+      summary: Get all tasks
+      operationId: getTasks
+      responses:
+        '200':
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/V1Task'
+    post:
+      summary: Create a new task
+      operationId: createTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1CreateTaskInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Task created successfully"
+
+components:
+  schemas:
+    V1Task:
+      type: object
+      properties:
+        id:
+          type: string
+          example: Study new technology
+        title:
+          type: string
+        completed:
+          type: boolean
+    V1CreateTaskInput:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        urgency:
+          type: string
+          enum:
+            - LOW
+            - NORMAL
+            - HIGH
+        dueDate:
+          type: string
+          format: date-time
+          example: "2025-09-06T22:30:00"
+
+#          format: date
+#          description: Due date of the task (yyyy-MM-dd)
+#          example: "2025-09-10"
+
