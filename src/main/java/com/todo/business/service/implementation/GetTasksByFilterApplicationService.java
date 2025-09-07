@@ -5,7 +5,6 @@ import com.todo.business.model.interfaces.ITask;
 import com.todo.business.service.interfaces.IGetTasksByFilterApplicationService;
 import com.todo.repository.DTO.TaskDTO;
 import com.todo.repository.mapper.interfaces.IMapTaskToTaskDTO;
-import com.todo.repository.service.interfaces.ITaskJpaRepository;
 import com.todo.repository.service.interfaces.ITaskRepository;
 import org.springframework.util.CollectionUtils;
 

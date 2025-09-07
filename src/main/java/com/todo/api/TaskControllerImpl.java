@@ -6,6 +6,7 @@ import com.todo.model.V1DeleteTaskInput;
 import com.todo.model.V1SearchFilter;
 import com.todo.model.V1Task;
 import com.todo.resource.delegate.CreateTaskDelegate;
+import com.todo.resource.delegate.DeleteTasksByIdsDelegate;
 import com.todo.resource.delegate.GetTasksByFilterDelegate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,8 @@ public class TaskControllerImpl implements TaskManagementApi {
     private CreateTaskDelegate createTaskDelegate;
     @Inject
     private GetTasksByFilterDelegate getTasksByFilterDelegate;
+    @Inject
+    private DeleteTasksByIdsDelegate deleteTasksByIdsDelegate;
 
     @Override
     public ResponseEntity<String> createTask(String userId, V1CreateTaskInput v1CreateTaskInput) {
@@ -28,8 +31,9 @@ public class TaskControllerImpl implements TaskManagementApi {
     }
 
     @Override
-    public ResponseEntity<List<String>> deleteTask(String userId, V1DeleteTaskInput v1DeleteTaskInput) {
-        return null;
+    public ResponseEntity<Integer> deleteTask(String userId, V1DeleteTaskInput v1DeleteTaskInput) {
+        int deletedInstances = deleteTasksByIdsDelegate.delete(userId, v1DeleteTaskInput);
+        return ResponseEntity.ok().body(deletedInstances);
     }
 
     @Override

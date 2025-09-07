@@ -26,6 +26,7 @@ public class GetTasksByFilterDelegate {
     private IMapITaskToV1Task outputMapper;
 
     public List<V1Task> execute(String userId, V1SearchFilter v1SearchFilter) {
+        // TODO: Validate input
         logger.info("In GetTasksByFilterDelegate with input: userId: {}, filter: {}", userId, v1SearchFilter);
         Filter filter = null;
         boolean isInputFilterEmpty = isFilterEmpty(v1SearchFilter);
