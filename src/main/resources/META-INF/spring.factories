@@ -1,8 +1,9 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.todo.resource.config.DelegateConfig,\
-com.todo.repository.config.MapperConfig,\
+com.todo.resource.config.ResourceMapperConfig,\
+com.todo.repository.config.RepositoryMapperConfig,\
 com.todo.repository.config.RepositoryConfig,\
-com.todo.business.config.ModelsConfig,\
+com.todo.business.config.BusinessModelsConfig,\
 com.todo.business.config.ApplicationServiceConfig,\
 com.todo.repository.config.DTOConfig
 

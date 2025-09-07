@@ -20,4 +20,7 @@ public class TaskRepository implements ITaskRepository {
         TaskDTO taskDTO = mapTaskToTaskDTO.map(task);
         return jpaRepository.save(taskDTO);
     }
+
+
+//    @Query("SELECT t FROM Task t WHERE t.userId = :userId AND (:status IS NULL OR t.status = :status)")
 }

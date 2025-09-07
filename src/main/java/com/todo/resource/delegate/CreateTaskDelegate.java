@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 public class CreateTaskDelegate {
 
@@ -20,16 +19,17 @@ public class CreateTaskDelegate {
     private ICreateTaskApplicationService createTaskApplicationService;
     @Inject
     private ObjectProvider<ITask> taskObjectProvider;
-    public ITask addTask(V1CreateTaskInput v1CreateTaskInput) {
+    public ITask addTask(String userId, V1CreateTaskInput v1CreateTaskInput) {
 
         logger.info("Executing AddTaskDelegate: {}", v1CreateTaskInput);
-        ITask result = createTaskApplicationService.execute(mapInput(v1CreateTaskInput));
+        ITask result = createTaskApplicationService.execute(mapInput(userId, v1CreateTaskInput));
         logger.info("DTO Created: {}", result);
         return result;
     }
 
-    private ITask mapInput(V1CreateTaskInput input) {
+    private ITask mapInput(String userId, V1CreateTaskInput input) {
         ITask task = taskObjectProvider.getObject();
+        task.setUserId(userId);
         task.setTitle(input.getTitle());
         task.setDescription(input.getDescription());
         task.setUrgency(input.getUrgency().getValue());

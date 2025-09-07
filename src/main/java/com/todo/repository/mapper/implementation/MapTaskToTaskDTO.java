@@ -18,11 +18,14 @@ public class MapTaskToTaskDTO implements IMapTaskToTaskDTO {
     public TaskDTO map(ITask task) {
         TaskDTO taskDTO = taskDtoProvider.getObject();
         taskDTO.setId(task.getId());
+        taskDTO.setUserId(task.getUserId());
         taskDTO.setTitle(task.getTitle());
         taskDTO.setDescription(task.getDescription());
         taskDTO.setDueDate(task.getDueDate());
         taskDTO.setUrgency(task.getUrgency());
         taskDTO.setCreatedAt(task.getCreatedAt());
+        taskDTO.setStatus(task.getStatus());
+        taskDTO.setActivationStatus(task.getActivationStatus());
 
         return taskDTO;
     }
@@ -31,12 +34,14 @@ public class MapTaskToTaskDTO implements IMapTaskToTaskDTO {
     public ITask reverseMap(TaskDTO taskDTO) {
         ITask task = taskProvider.getObject();
         task.setId(taskDTO.getId());
+        task.setUserId(taskDTO.getUserId());
         task.setTitle(taskDTO.getTitle());
         task.setDescription(taskDTO.getDescription());
         task.setDueDate(taskDTO.getDueDate());
         task.setUrgency(taskDTO.getUrgency());
         task.setCreatedAt(taskDTO.getCreatedAt());
-
+        task.setStatus(taskDTO.getStatus());
+        task.setActivationStatus(taskDTO.getActivationStatus());
         return task;
     }
 }

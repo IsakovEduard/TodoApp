@@ -14,6 +14,10 @@ public interface ITask extends Serializable {
 
     void setId(Long id);
 
+    String getUserId();
+
+    void setUserId(String userId);
+
     String getTitle();
 
     void setTitle(String title);
@@ -34,4 +38,12 @@ public interface ITask extends Serializable {
     String getUrgency();
 
     void setUrgency(String urgency);
+
+    String getStatus();
+
+    void setStatus(String status);
+
+    String getActivationStatus();
+
+    void setActivationStatus(String activationStatus);
 }

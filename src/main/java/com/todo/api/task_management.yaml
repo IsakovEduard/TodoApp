@@ -3,10 +3,25 @@ info:
   title: Task API
   version: 1.0.0
 paths:
-  /task-management/:
+  /task-management/{userId}:
     get:
-      summary: Get all tasks
-      operationId: getTasks
+      description:
+        Get tasks by filter. If no filter passed retrieves all tasks
+      operationId: getTasksByFilter
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: filter
+          in: query
+          style: deepObject   # tells OpenAPI to expand object keys
+          explode: true
+          required: false
+          schema:
+            $ref: '#/components/schemas/V1SearchFilter'
+
       responses:
         '200':
           description: List of tasks
@@ -19,6 +34,12 @@ paths:
     post:
       summary: Create a new task
       operationId: createTask
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -41,11 +62,28 @@ components:
       properties:
         id:
           type: string
-          example: Study new technology
+        userId:
+          type: string
         title:
           type: string
-        completed:
-          type: boolean
+          example: Study new technology
+        description:
+          type: string
+        urgency:
+            $ref: '#/components/schemas/V1Urgency'
+        dueDate:
+          type: string
+          format: date-time
+          example: "2025-09-06T22:30:00"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-09-06T22:30:00"
+        status:
+            $ref: '#/components/schemas/V1Status'
+        activationStatus:
+            $ref: '#/components/schemas/V1ActivationStatus'
+
     V1CreateTaskInput:
       type: object
       properties:
@@ -54,17 +92,38 @@ components:
         description:
           type: string
         urgency:
-          type: string
-          enum:
-            - LOW
-            - NORMAL
-            - HIGH
+          $ref: '#/components/schemas/V1Urgency'
         dueDate:
           type: string
           format: date-time
           example: "2025-09-06T22:30:00"
-
 #          format: date
 #          description: Due date of the task (yyyy-MM-dd)
 #          example: "2025-09-10"
+    V1Urgency:
+      type: string
+      enum:
+        - LOW
+        - NORMAL
+        - HIGH
+    V1Status:
+        type: string
+        enum:
+          - IN_PROGRESS
+          - COMPLETED
+    V1ActivationStatus:
+      type: string
+      enum:
+        - AC
+        - DE
+
+    V1SearchFilter:
+      type: object
+      properties:
+        taskId:
+          type: string
+        status:
+          $ref: '#/components/schemas/V1Status'
+        urgency:
+          $ref: '#/components/schemas/V1Urgency'
 

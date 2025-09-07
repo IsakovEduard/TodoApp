@@ -23,8 +23,11 @@ public class CreateTaskApplicationService implements ICreateTaskApplicationServi
     public ITask execute(ITask task) {
         logger.info("Executing CreateTaskApplicationService with input: {}", task);
 
-        // Populate createdAt for new task
+        // Populate fields with default values for new task
         task.setCreatedAt(LocalDateTime.now());
+        task.setStatus("IN_PROGRESS");
+        task.setActivationStatus("AC");
+
 
         return mapper.reverseMap(taskRepository.createTask(task));
     }
