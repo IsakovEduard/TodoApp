@@ -6,6 +6,7 @@ import com.todo.business.service.interfaces.IGetTasksByFilterApplicationService;
 import com.todo.repository.DTO.TaskDTO;
 import com.todo.repository.mapper.interfaces.IMapTaskToTaskDTO;
 import com.todo.repository.service.interfaces.ITaskJpaRepository;
+import com.todo.repository.service.interfaces.ITaskRepository;
 import org.springframework.util.CollectionUtils;
 
 
@@ -16,14 +17,14 @@ import java.util.List;
 public class GetTasksByFilterApplicationService implements IGetTasksByFilterApplicationService {
 
     @Inject
-    private ITaskJpaRepository jpaRepository;
+    private ITaskRepository taskRepository;
     @Inject
     private IMapTaskToTaskDTO mapper;
 
     @Override
     public List<ITask> execute(String userId, Filter filter) {
 
-        List<TaskDTO> allTaskDTOs = jpaRepository.findByUserId(userId);
+        List<TaskDTO> allTaskDTOs = taskRepository.getTasksByUser(userId, false);
         if (!CollectionUtils.isEmpty(allTaskDTOs) && filter != null) {
             applyFilters(allTaskDTOs, filter);
         }

@@ -2,6 +2,7 @@ package com.todo.api;
 
 import com.todo.business.model.interfaces.ITask;
 import com.todo.model.V1CreateTaskInput;
+import com.todo.model.V1DeleteTaskInput;
 import com.todo.model.V1SearchFilter;
 import com.todo.model.V1Task;
 import com.todo.resource.delegate.CreateTaskDelegate;
@@ -24,6 +25,11 @@ public class TaskControllerImpl implements TaskManagementApi {
     public ResponseEntity<String> createTask(String userId, V1CreateTaskInput v1CreateTaskInput) {
         ITask createdTask = createTaskDelegate.addTask(userId, v1CreateTaskInput);
         return ResponseEntity.status(201).body(createdTask.getId().toString());
+    }
+
+    @Override
+    public ResponseEntity<List<String>> deleteTask(String userId, V1DeleteTaskInput v1DeleteTaskInput) {
+        return null;
     }
 
     @Override

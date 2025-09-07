@@ -6,10 +6,8 @@ import com.todo.model.V1Status;
 import com.todo.model.V1Task;
 import com.todo.model.V1Urgency;
 import com.todo.resource.mapper.interfaces.IMapITaskToV1Task;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.util.CollectionUtils;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -7,6 +7,8 @@ import com.todo.repository.service.interfaces.ITaskJpaRepository;
 import com.todo.repository.service.interfaces.ITaskRepository;
 
 import javax.inject.Inject;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class TaskRepository implements ITaskRepository {
 
@@ -21,6 +23,14 @@ public class TaskRepository implements ITaskRepository {
         return jpaRepository.save(taskDTO);
     }
 
+    @Override
+    public List<TaskDTO> getTasksByUser(String userId, boolean includeDeleted) {
+        List<TaskDTO> userTasks = jpaRepository.findByUserId(userId);
+        if (!includeDeleted) {
+            userTasks = userTasks.stream().filter(taskDTO -> !"DE".equals(taskDTO.getActivationStatus())).toList();
+        }
+        return userTasks;
+    }
 
 //    @Query("SELECT t FROM Task t WHERE t.userId = :userId AND (:status IS NULL OR t.status = :status)")
 }

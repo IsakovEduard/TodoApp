@@ -54,6 +54,29 @@ paths:
               schema:
                 type: string
                 example: "Task created successfully"
+    delete:
+      operationId: deleteTask
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1DeleteTaskInput'
+      responses:
+        '200':
+          description: Removed task ids
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
 
 components:
   schemas:
@@ -100,6 +123,16 @@ components:
 #          format: date
 #          description: Due date of the task (yyyy-MM-dd)
 #          example: "2025-09-10"
+    V1DeleteTaskInput:
+      type: object
+      properties:
+        taskIds:
+          type: array
+          items:
+            type: string
+      required:
+        - taskIds
+
     V1Urgency:
       type: string
       enum:
