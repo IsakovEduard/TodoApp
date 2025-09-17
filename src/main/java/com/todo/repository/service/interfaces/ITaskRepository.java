@@ -15,4 +15,6 @@ public interface ITaskRepository {
     TaskDTO createTask(ITask task);
 
     List<TaskDTO> getTasksByUser(String userId, boolean includeDeleted);
+
+    TaskDTO getTaskByUserIdAndTaskId(String userId, Long taskId);
 }

@@ -76,6 +76,29 @@ paths:
               schema:
                 type: integer
                 description: number of deleted instances
+    put:
+      operationId: updateTaskCharacteristics
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1UpdateCharacteristicsInput'
+      responses:
+        '200':
+           description: Tasks after update characteristics
+           content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/V1Task'
 
 components:
   schemas:
@@ -131,6 +154,24 @@ components:
             type: string
       required:
         - taskIds
+
+    V1UpdateCharacteristicsInput:
+      type: object
+      properties:
+        taskId:
+          type: string
+        characteristics:
+          type: array
+          items:
+            $ref: '#/components/schemas/V1Characteristic'
+
+    V1Characteristic:
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: string
 
     V1Urgency:
       type: string

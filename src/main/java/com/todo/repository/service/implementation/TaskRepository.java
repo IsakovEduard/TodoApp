@@ -21,6 +21,7 @@ public class TaskRepository implements ITaskRepository {
 
     @Inject
     private IMapTaskToTaskDTO mapTaskToTaskDTO;
+
     @Override
     public TaskDTO createTask(ITask task) {
         TaskDTO taskDTO = mapTaskToTaskDTO.map(task);
@@ -31,9 +32,22 @@ public class TaskRepository implements ITaskRepository {
     public List<TaskDTO> getTasksByUser(String userId, boolean includeDeleted) {
         List<TaskDTO> userTasks = jpaRepository.findByUserId(userId);
         if (!includeDeleted) {
-            userTasks = userTasks.stream().filter(taskDTO -> !"DE".equals(taskDTO.getActivationStatus())).toList();
+            userTasks = filterOutDeleted(userTasks);
         }
         return userTasks;
     }
 
+    @Override
+    public TaskDTO getTaskByUserIdAndTaskId(String userId, Long taskId) {
+        TaskDTO task = jpaRepository.findByUserIdAndId(userId, taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+        if ("DE".equals(task.getActivationStatus())) {
+            throw new RuntimeException("Cannot modify deleted task!");
+        }
+        return task;
+    }
+
+    private List<TaskDTO> filterOutDeleted(List<TaskDTO> userTasks) {
+        return userTasks.stream().filter(taskDTO -> !"DE".equals(taskDTO.getActivationStatus())).toList();
+    }
 }
