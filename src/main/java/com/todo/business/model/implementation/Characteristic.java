@@ -4,6 +4,15 @@ public class Characteristic {
     private String name;
     private String value;
 
+    public Characteristic(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
+
+    public Characteristic() {
+
+    }
+
     public String getName() {
         return name;
     }
