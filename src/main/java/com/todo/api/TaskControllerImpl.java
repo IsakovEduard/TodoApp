@@ -37,8 +37,8 @@ public class TaskControllerImpl implements TaskManagementApi {
     }
 
     @Override
-    public ResponseEntity<List<V1Task>> getTasksByFilter(String userId, V1SearchFilter filter) {
-        List<V1Task> result = getTasksByFilterDelegate.execute(userId, filter);
+    public ResponseEntity<List<V1Task>> getTasksByFilter(String userId, String taskId, String status, String urgency) {
+        List<V1Task> result = getTasksByFilterDelegate.execute(userId, taskId, status, urgency);
         return ResponseEntity.ok().body(result);
     }
 

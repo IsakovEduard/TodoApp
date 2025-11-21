@@ -5,5 +5,5 @@ com.todo.repository.config.RepositoryMapperConfig,\
 com.todo.repository.config.RepositoryConfig,\
 com.todo.business.config.BusinessModelsConfig,\
 com.todo.business.config.ApplicationServiceConfig,\
+com.todo.business.config.DomainServiceConfig,\
 com.todo.repository.config.DTOConfig
-

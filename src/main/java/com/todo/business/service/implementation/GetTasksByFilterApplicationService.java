@@ -1,5 +1,6 @@
 package com.todo.business.service.implementation;
 
+import com.todo.business.domain.interfaces.ITaskFilterDomainService;
 import com.todo.business.model.implementation.Filter;
 import com.todo.business.model.interfaces.ITask;
 import com.todo.business.service.interfaces.IGetTasksByFilterApplicationService;
@@ -19,21 +20,19 @@ public class GetTasksByFilterApplicationService implements IGetTasksByFilterAppl
     private ITaskRepository taskRepository;
     @Inject
     private IMapTaskToTaskDTO mapper;
+    @Inject
+    private ITaskFilterDomainService taskFilterDomainService;
 
     @Override
     public List<ITask> execute(String userId, Filter filter) {
 
-        List<TaskDTO> allTaskDTOs = taskRepository.getTasksByUser(userId, false);
-        if (!CollectionUtils.isEmpty(allTaskDTOs) && filter != null) {
-            applyFilters(allTaskDTOs, filter);
+        List<TaskDTO> taskDTOs = taskRepository.getTasksByUser(userId, false);
+        if (!CollectionUtils.isEmpty(taskDTOs) && filter != null) {
+            taskDTOs = taskFilterDomainService.applyFilter(taskDTOs, filter);
         }
-        if (CollectionUtils.isEmpty(allTaskDTOs)) {
+        if (CollectionUtils.isEmpty(taskDTOs)) {
             return new ArrayList<>();
         }
-        return allTaskDTOs.stream().map(task -> mapper.reverseMap(task)).toList();
-    }
-
-    private void applyFilters(List<TaskDTO> allTaskDTOs, Filter filter) {
-        // TODO: Create separate reusable service and implement filtering
+        return taskDTOs.stream().map(task -> mapper.reverseMap(task)).toList();
     }
 }

@@ -14,13 +14,21 @@ paths:
           required: true
           schema:
             type: string
-        - name: filter
+        - name: taskId
           in: query
-          style: deepObject   # tells OpenAPI to expand object keys
-          explode: true
           required: false
           schema:
-            $ref: '#/components/schemas/V1SearchFilter'
+            type: string
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: urgency
+          in: query
+          required: false
+          schema:
+            type: string
 
       responses:
         '200':

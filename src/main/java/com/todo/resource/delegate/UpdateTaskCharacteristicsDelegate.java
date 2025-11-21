@@ -8,7 +8,6 @@ import com.todo.model.V1Characteristic;
 import com.todo.model.V1Task;
 import com.todo.model.V1UpdateCharacteristicsInput;
 import com.todo.resource.mapper.interfaces.IMapITaskToV1Task;
-import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
