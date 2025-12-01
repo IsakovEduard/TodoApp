@@ -1,7 +1,7 @@
 package com.todo.resource.delegate;
 
 import com.todo.business.service.interfaces.IDeleteTasksByIdsApplicationService;
-import com.todo.model.V1DeleteTaskInput;
+import com.todo.controller.api.model.V1DeleteTaskInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

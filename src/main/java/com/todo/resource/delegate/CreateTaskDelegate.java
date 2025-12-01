@@ -3,12 +3,16 @@ package com.todo.resource.delegate;
 import com.todo.business.model.interfaces.ITask;
 import com.todo.business.service.interfaces.ICreateTaskApplicationService;
 
-import com.todo.model.V1CreateTaskInput;
+import com.todo.controller.api.model.V1CreateTaskInput;
+import com.todo.controller.api.model.V1Urgency;
+import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
 
 public class CreateTaskDelegate {
 
@@ -22,9 +26,42 @@ public class CreateTaskDelegate {
     public ITask addTask(String userId, V1CreateTaskInput v1CreateTaskInput) {
         // TODO: Validate input
         logger.info("Executing AddTaskDelegate: {}", v1CreateTaskInput);
+        validateInput(userId, v1CreateTaskInput);
         ITask result = createTaskApplicationService.execute(mapInput(userId, v1CreateTaskInput));
+
         logger.info("DTO Created: {}", result);
         return result;
+    }
+
+    private void validateInput(String userId, V1CreateTaskInput input) {
+        StringBuilder errorMessage = new StringBuilder();
+        try {
+            Long.parseLong(userId);
+        } catch (NumberFormatException ex) {
+           errorMessage.append("userId must be a numeric value. ");
+        }
+
+        if (StringUtils.isEmpty(input.getTitle())) {
+            errorMessage.append("Title can not be empty. ");
+        }
+        if (StringUtils.isEmpty(input.getDescription())) {
+            errorMessage.append("Description can not be empty. ");
+        }
+        if (StringUtils.isEmpty(input.getUrgency().getValue()) || !EnumUtils.isValidEnum(V1Urgency.class, input.getUrgency().getValue())) {
+            errorMessage.append("Urgency value is null or not valid.");
+        }
+//        if (dateString != null) return;
+//
+//        try {
+//            LocalDateTime.parse(dateString);
+//        } catch (DateTimeParseException e) {
+//            throw new BadRequestException(
+//                    "Invalid dueDate format. Expected: yyyy-MM-dd'T'HH:mm:ss"
+//            );
+//        }
+        if (!errorMessage.isEmpty()) {
+            throw new IllegalArgumentException(errorMessage.toString());
+        }
     }
 
     private ITask mapInput(String userId, V1CreateTaskInput input) {

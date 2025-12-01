@@ -3,13 +3,15 @@ package com.todo.resource.delegate;
 import com.todo.business.model.implementation.Filter;
 import com.todo.business.model.interfaces.ITask;
 import com.todo.business.service.interfaces.IGetTasksByFilterApplicationService;
-import com.todo.model.V1SearchFilter;
-import com.todo.model.V1Task;
+import com.todo.controller.api.model.V1SearchFilter;
+import com.todo.controller.api.model.V1Task;
 import com.todo.resource.mapper.interfaces.IMapITaskToV1Task;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -26,7 +28,7 @@ public class GetTasksByFilterDelegate {
     private IMapITaskToV1Task outputMapper;
 
     public List<V1Task> execute(String userId, String taskId, String status, String urgency){
-        // TODO: Validate input
+
         logger.info("In GetTasksByFilterDelegate with input: userId: {}, filter values: taskId={},status={},urgency{}", userId, taskId, status ,urgency);
         Filter filter = null;
         boolean isInputFilterEmpty = StringUtils.isEmpty(taskId) && StringUtils.isEmpty(status) && StringUtils.isEmpty(urgency);

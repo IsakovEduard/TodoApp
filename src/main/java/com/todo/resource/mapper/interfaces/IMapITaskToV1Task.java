@@ -1,7 +1,7 @@
 package com.todo.resource.mapper.interfaces;
 
 import com.todo.business.model.interfaces.ITask;
-import com.todo.model.V1Task;
+import com.todo.controller.api.model.V1Task;
 
 import java.util.List;
 

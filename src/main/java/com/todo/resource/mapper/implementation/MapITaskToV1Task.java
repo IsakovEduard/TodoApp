@@ -1,10 +1,10 @@
 package com.todo.resource.mapper.implementation;
 
 import com.todo.business.model.interfaces.ITask;
-import com.todo.model.V1ActivationStatus;
-import com.todo.model.V1Status;
-import com.todo.model.V1Task;
-import com.todo.model.V1Urgency;
+import com.todo.controller.api.model.V1ActivationStatus;
+import com.todo.controller.api.model.V1Status;
+import com.todo.controller.api.model.V1Task;
+import com.todo.controller.api.model.V1Urgency;
 import com.todo.resource.mapper.interfaces.IMapITaskToV1Task;
 import org.springframework.util.CollectionUtils;
 

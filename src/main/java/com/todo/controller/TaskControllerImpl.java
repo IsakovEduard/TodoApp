@@ -1,11 +1,13 @@
-package com.todo.api;
+package com.todo.controller;
 
 import com.todo.business.model.interfaces.ITask;
-import com.todo.model.*;
+import com.todo.controller.api.interfaces.TaskManagementApi;
+import com.todo.controller.api.model.*;
 import com.todo.resource.delegate.CreateTaskDelegate;
 import com.todo.resource.delegate.DeleteTasksByIdsDelegate;
 import com.todo.resource.delegate.GetTasksByFilterDelegate;
 import com.todo.resource.delegate.UpdateTaskCharacteristicsDelegate;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 

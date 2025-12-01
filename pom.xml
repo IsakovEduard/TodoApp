@@ -107,13 +107,13 @@
                         </goals>
                         <configuration>
                             <!-- Path to your YAML file -->
-                            <inputSpec>${project.basedir}/src/main/java/com/todo/api/task_management.yaml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/java/com/todo/controller/api/task_management.yaml</inputSpec>
 
                             <generatorName>spring</generatorName>
 
                             <!-- Package names for generated classes -->
-                            <apiPackage>com.todo.api</apiPackage>
-                            <modelPackage>com.todo.model</modelPackage>
+                            <apiPackage>com.todo.controller.api.interfaces</apiPackage>
+                            <modelPackage>com.todo.controller.api.model</modelPackage>
 
                             <!-- Use your custom template folder for models -->
 <!--                            <templateDirectory>${project.basedir}/src/main/resources/openapi-templates</templateDirectory>-->
