@@ -1,20 +1,16 @@
 package com.todo.repository.service.interfaces;
 
-import com.todo.business.model.interfaces.ITask;
-import com.todo.repository.DTO.TaskDTO;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
+import com.todo.business.model.interfaces.ITaskDTO;
+import com.todo.repository.entity.Task;
 
 import java.util.List;
 
 
 public interface ITaskRepository {
 
-    TaskDTO createTask(ITask task);
+    Task createTask(ITaskDTO task);
 
-    List<TaskDTO> getTasksByUser(String userId, boolean includeDeleted);
+    List<Task> getTasksByUser(Long userId, boolean includeDeleted);
 
-    TaskDTO getTaskByUserIdAndTaskId(String userId, Long taskId);
+    Task getTaskByUserIdAndTaskId(Long userId, Long taskId);
 }

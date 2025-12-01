@@ -1,7 +1,7 @@
 package com.todo.business.service.interfaces;
 
-import com.todo.business.model.interfaces.ITask;
+import com.todo.business.model.interfaces.ITaskDTO;
 
 public interface ICreateTaskApplicationService {
-    ITask execute(ITask task);
+    ITaskDTO execute(ITaskDTO task);
 }

@@ -2,7 +2,7 @@ package com.todo.resource.delegate;
 
 import com.todo.business.model.implementation.Characteristic;
 import com.todo.business.model.implementation.PatchElement;
-import com.todo.business.model.interfaces.ITask;
+import com.todo.business.model.interfaces.ITaskDTO;
 import com.todo.business.service.interfaces.IUpdateTaskCharacteristicsApplicationService;
 import com.todo.controller.api.model.V1Characteristic;
 import com.todo.controller.api.model.V1Task;
@@ -30,11 +30,11 @@ public class UpdateTaskCharacteristicsDelegate {
     @Inject
     private IMapITaskToV1Task mapITaskToV1Task;
 
-    public List<V1Task> execute(String userId, V1UpdateCharacteristicsInput v1UpdateCharacteristicsInput) {
+    public List<V1Task> execute(V1UpdateCharacteristicsInput v1UpdateCharacteristicsInput) {
 
-        logger.info("In UpdateTaskCharacteristicsDelegate with input: userId: {}, v1UpdateCharacteristicsInput: {}", userId, v1UpdateCharacteristicsInput);
+        logger.info("In UpdateTaskCharacteristicsDelegate with input: v1UpdateCharacteristicsInput: {}", v1UpdateCharacteristicsInput);
         PatchElement patchElement = mapInput(v1UpdateCharacteristicsInput);
-        ITask updatedTask = updateTaskCharacteristicsApplicationService.execute(userId, patchElement);
+        ITaskDTO updatedTask = updateTaskCharacteristicsApplicationService.execute(patchElement);
         return List.of(mapITaskToV1Task.mapSingle(updatedTask));
     }
 

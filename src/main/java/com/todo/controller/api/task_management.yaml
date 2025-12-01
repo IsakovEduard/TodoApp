@@ -3,17 +3,17 @@ info:
   title: Task API
   version: 1.0.0
 paths:
-  /task-management/{userId}:
+  /task-management:
     get:
       description:
         Get tasks by filter. If no filter passed retrieves all tasks
       operationId: getTasksByFilter
       parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
+#        - name: userId
+#          in: path
+#          required: true
+#          schema:
+#            type: string
         - name: taskId
           in: query
           required: false
@@ -42,12 +42,12 @@ paths:
     post:
       summary: Create a new task
       operationId: createTask
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
+#      parameters:
+#        - name: userId
+#          in: path
+#          required: true
+#          schema:
+#            type: string
       requestBody:
         required: true
         content:
@@ -64,12 +64,12 @@ paths:
                 example: "Task created successfully"
     delete:
       operationId: deleteTask
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
+#      parameters:
+#        - name: userId
+#          in: path
+#          required: true
+#          schema:
+#            type: string
       requestBody:
         required: true
         content:
@@ -86,12 +86,12 @@ paths:
                 description: number of deleted instances
     put:
       operationId: updateTaskCharacteristics
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
+#      parameters:
+#        - name: userId
+#          in: path
+#          required: true
+#          schema:
+#            type: string
       requestBody:
         required: true
         content:

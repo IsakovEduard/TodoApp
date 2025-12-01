@@ -1,13 +1,7 @@
 package com.todo.business.config;
 
-import com.todo.business.service.implementation.CreateTaskApplicationService;
-import com.todo.business.service.implementation.DeleteTasksByIdsApplicationService;
-import com.todo.business.service.implementation.GetTasksByFilterApplicationService;
-import com.todo.business.service.implementation.UpdateTaskCharacteristicsApplicationService;
-import com.todo.business.service.interfaces.ICreateTaskApplicationService;
-import com.todo.business.service.interfaces.IDeleteTasksByIdsApplicationService;
-import com.todo.business.service.interfaces.IGetTasksByFilterApplicationService;
-import com.todo.business.service.interfaces.IUpdateTaskCharacteristicsApplicationService;
+import com.todo.business.service.implementation.*;
+import com.todo.business.service.interfaces.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -30,5 +24,9 @@ public class ApplicationServiceConfig {
     @Bean
     public IUpdateTaskCharacteristicsApplicationService updateTaskCharacteristicsApplicationService() {
         return new UpdateTaskCharacteristicsApplicationService();
+    }
+    @Bean
+    public IGetUserServiceFromContextService getUserServiceFromContextService() {
+        return new GetUserServiceFromContextServiceService();
     }
 }

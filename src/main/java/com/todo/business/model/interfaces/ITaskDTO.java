@@ -1,22 +1,22 @@
 package com.todo.business.model.interfaces;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.todo.business.model.implementation.Task;
+import com.todo.business.model.implementation.TaskDTO;
+import com.todo.repository.entity.User;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@JsonDeserialize(as = Task.class)
-public interface ITask extends Serializable {
+@JsonDeserialize(as = TaskDTO.class)
+public interface ITaskDTO extends Serializable {
 
 
     Long getId();
 
     void setId(Long id);
 
-    String getUserId();
-
-    void setUserId(String userId);
+    User getUser();
+    void setUser(User user);
 
     String getTitle();
 

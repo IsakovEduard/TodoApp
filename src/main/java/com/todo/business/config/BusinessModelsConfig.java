@@ -3,8 +3,8 @@ package com.todo.business.config;
 import com.todo.business.model.implementation.Characteristic;
 import com.todo.business.model.implementation.Filter;
 import com.todo.business.model.implementation.PatchElement;
-import com.todo.business.model.implementation.Task;
-import com.todo.business.model.interfaces.ITask;
+import com.todo.business.model.implementation.TaskDTO;
+import com.todo.business.model.interfaces.ITaskDTO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -14,8 +14,8 @@ public class BusinessModelsConfig {
 
     @Bean
     @Scope("prototype")
-    public ITask task() {
-        return new Task();
+    public ITaskDTO taskDTO() {
+        return new TaskDTO();
     }
 
     @Bean

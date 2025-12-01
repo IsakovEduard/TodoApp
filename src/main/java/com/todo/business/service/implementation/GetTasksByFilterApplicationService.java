@@ -2,11 +2,15 @@ package com.todo.business.service.implementation;
 
 import com.todo.business.domain.interfaces.ITaskFilterDomainService;
 import com.todo.business.model.implementation.Filter;
-import com.todo.business.model.interfaces.ITask;
+import com.todo.business.model.interfaces.ITaskDTO;
 import com.todo.business.service.interfaces.IGetTasksByFilterApplicationService;
-import com.todo.repository.DTO.TaskDTO;
+import com.todo.business.service.interfaces.IGetUserServiceFromContextService;
+import com.todo.repository.entity.Task;
+import com.todo.repository.entity.User;
 import com.todo.repository.mapper.interfaces.IMapTaskToTaskDTO;
 import com.todo.repository.service.interfaces.ITaskRepository;
+import com.todo.repository.service.interfaces.IUserJpaRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.CollectionUtils;
 
 
@@ -19,20 +23,23 @@ public class GetTasksByFilterApplicationService implements IGetTasksByFilterAppl
     @Inject
     private ITaskRepository taskRepository;
     @Inject
+    private IGetUserServiceFromContextService getUserServiceFromContextService;
+    @Inject
     private IMapTaskToTaskDTO mapper;
     @Inject
     private ITaskFilterDomainService taskFilterDomainService;
 
-    @Override
-    public List<ITask> execute(String userId, Filter filter) {
 
-        List<TaskDTO> taskDTOs = taskRepository.getTasksByUser(userId, false);
-        if (!CollectionUtils.isEmpty(taskDTOs) && filter != null) {
-            taskDTOs = taskFilterDomainService.applyFilter(taskDTOs, filter);
+    @Override
+    public List<ITaskDTO> execute(Filter filter) {
+        User user = getUserServiceFromContextService.getUserFromContext();
+        List<Task> taskEntities = taskRepository.getTasksByUser(user.getId(), false);
+        if (!CollectionUtils.isEmpty(taskEntities) && filter != null) {
+            taskEntities = taskFilterDomainService.applyFilter(taskEntities, filter);
         }
-        if (CollectionUtils.isEmpty(taskDTOs)) {
+        if (CollectionUtils.isEmpty(taskEntities)) {
             return new ArrayList<>();
         }
-        return taskDTOs.stream().map(task -> mapper.reverseMap(task)).toList();
+        return taskEntities.stream().map(task -> mapper.reverseMap(task)).toList();
     }
 }

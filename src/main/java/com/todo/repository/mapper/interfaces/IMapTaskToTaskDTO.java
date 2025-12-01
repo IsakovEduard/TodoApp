@@ -1,9 +1,9 @@
 package com.todo.repository.mapper.interfaces;
 
-import com.todo.business.model.interfaces.ITask;
-import com.todo.repository.DTO.TaskDTO;
+import com.todo.business.model.interfaces.ITaskDTO;
+import com.todo.repository.entity.Task;
 
 public interface IMapTaskToTaskDTO {
-    TaskDTO map(ITask task);
-    ITask reverseMap(TaskDTO taskDTO);
+    Task map(ITaskDTO task);
+    ITaskDTO reverseMap(Task task);
 }

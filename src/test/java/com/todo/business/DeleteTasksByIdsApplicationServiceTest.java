@@ -1,13 +1,21 @@
-package com.todo.business.service.implementation;
+package com.todo.business;
 
+import com.todo.business.service.implementation.DeleteTasksByIdsApplicationService;
+import com.todo.business.service.interfaces.IGetUserServiceFromContextService;
+import com.todo.repository.entity.User;
 import com.todo.repository.service.interfaces.ITaskJpaRepository;
+import com.todo.repository.service.interfaces.IUserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+import javax.inject.Inject;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -15,7 +23,11 @@ import static org.mockito.Mockito.*;
 class DeleteTasksByIdsApplicationServiceTest {
 
     @Mock
-    private ITaskJpaRepository jpaRepository;
+    private ITaskJpaRepository taskJpaRepository;
+    @Mock
+    private IUserJpaRepository userJpaRepository;
+    @Mock
+    private IGetUserServiceFromContextService getUserServiceFromContextService;
 
     @InjectMocks
     private DeleteTasksByIdsApplicationService service;
@@ -23,38 +35,50 @@ class DeleteTasksByIdsApplicationServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        // 1) Mock SecurityContext with authenticated user
+        UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken("testUser", null, List.of());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        // 2) Mock userJpaRepository to return a valid User
+        User mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setUsername("testUser");
+        when(getUserServiceFromContextService.getUserFromContext())
+                .thenReturn(mockUser);
     }
 
     @Test
     void execute_ShouldConvertIdsAndCallRepository() {
         // Arrange
-        String userId = "user1";
+        long userId = 1L;
         List<String> taskIds = List.of("1", "2", "3");
         List<Long> expectedConvertedIds = List.of(1L, 2L, 3L);
 
-        when(jpaRepository.deactivateAndCancelTasks(userId, expectedConvertedIds))
+        when(taskJpaRepository.deactivateAndCancelTasks(userId, expectedConvertedIds))
                 .thenReturn(3);
 
         // Act
-        int result = service.execute(userId, taskIds);
+        int result = service.execute(taskIds);
 
         // Assert
         assertEquals(3, result);
-        verify(jpaRepository, times(1))
+        verify(taskJpaRepository, times(1))
                 .deactivateAndCancelTasks(userId, expectedConvertedIds);
     }
 
     @Test
     void execute_ShouldReturnZero_WhenRepositoryReturnsZero() {
-        String userId = "user1";
+        Long userId = 1L;
         List<String> taskIds = List.of("100");
 
-        when(jpaRepository.deactivateAndCancelTasks(userId, List.of(100L)))
+        when(taskJpaRepository.deactivateAndCancelTasks(userId, List.of(100L)))
                 .thenReturn(0);
 
-        int result = service.execute(userId, taskIds);
+        int result = service.execute(taskIds);
 
         assertEquals(0, result);
-        verify(jpaRepository).deactivateAndCancelTasks(userId, List.of(100L));
+        verify(taskJpaRepository).deactivateAndCancelTasks(userId, List.of(100L));
     }
 }

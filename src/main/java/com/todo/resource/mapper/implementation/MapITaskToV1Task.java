@@ -1,6 +1,6 @@
 package com.todo.resource.mapper.implementation;
 
-import com.todo.business.model.interfaces.ITask;
+import com.todo.business.model.interfaces.ITaskDTO;
 import com.todo.controller.api.model.V1ActivationStatus;
 import com.todo.controller.api.model.V1Status;
 import com.todo.controller.api.model.V1Task;
@@ -14,7 +14,7 @@ import java.util.List;
 public class MapITaskToV1Task implements IMapITaskToV1Task {
 
     @Override
-    public List<V1Task> map(List<ITask> tasks) {
+    public List<V1Task> map(List<ITaskDTO> tasks) {
         List<V1Task> v1Tasks = new ArrayList<>();
         if (!CollectionUtils.isEmpty(tasks)) {
             tasks.forEach(task -> v1Tasks.add(mapSingle(task)));
@@ -23,10 +23,10 @@ public class MapITaskToV1Task implements IMapITaskToV1Task {
     }
 
     @Override
-    public V1Task mapSingle(ITask task) {
+    public V1Task mapSingle(ITaskDTO task) {
         V1Task v1Task = new V1Task();
         v1Task.setId(task.getId().toString());
-        v1Task.setUserId(task.getUserId());
+        v1Task.setUserId(String.valueOf(task.getUser().getId()));
         v1Task.setTitle(task.getTitle());
         v1Task.setDescription(task.getDescription());
         v1Task.setDueDate(task.getDueDate());

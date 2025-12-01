@@ -1,6 +1,6 @@
 package com.todo.resource.delegate;
 
-import com.todo.business.model.interfaces.ITask;
+import com.todo.business.model.interfaces.ITaskDTO;
 import com.todo.business.service.interfaces.ICreateTaskApplicationService;
 
 import com.todo.controller.api.model.V1CreateTaskInput;
@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 
 import javax.inject.Inject;
-import java.time.LocalDateTime;
 
 public class CreateTaskDelegate {
 
@@ -22,25 +21,19 @@ public class CreateTaskDelegate {
     @Inject
     private ICreateTaskApplicationService createTaskApplicationService;
     @Inject
-    private ObjectProvider<ITask> taskObjectProvider;
-    public ITask addTask(String userId, V1CreateTaskInput v1CreateTaskInput) {
+    private ObjectProvider<ITaskDTO> taskObjectProvider;
+    public ITaskDTO addTask( V1CreateTaskInput v1CreateTaskInput) {
         // TODO: Validate input
         logger.info("Executing AddTaskDelegate: {}", v1CreateTaskInput);
-        validateInput(userId, v1CreateTaskInput);
-        ITask result = createTaskApplicationService.execute(mapInput(userId, v1CreateTaskInput));
+        validateInput(v1CreateTaskInput);
+        ITaskDTO result = createTaskApplicationService.execute(mapInput(v1CreateTaskInput));
 
         logger.info("DTO Created: {}", result);
         return result;
     }
 
-    private void validateInput(String userId, V1CreateTaskInput input) {
+    private void validateInput(V1CreateTaskInput input) {
         StringBuilder errorMessage = new StringBuilder();
-        try {
-            Long.parseLong(userId);
-        } catch (NumberFormatException ex) {
-           errorMessage.append("userId must be a numeric value. ");
-        }
-
         if (StringUtils.isEmpty(input.getTitle())) {
             errorMessage.append("Title can not be empty. ");
         }
@@ -50,23 +43,14 @@ public class CreateTaskDelegate {
         if (StringUtils.isEmpty(input.getUrgency().getValue()) || !EnumUtils.isValidEnum(V1Urgency.class, input.getUrgency().getValue())) {
             errorMessage.append("Urgency value is null or not valid.");
         }
-//        if (dateString != null) return;
-//
-//        try {
-//            LocalDateTime.parse(dateString);
-//        } catch (DateTimeParseException e) {
-//            throw new BadRequestException(
-//                    "Invalid dueDate format. Expected: yyyy-MM-dd'T'HH:mm:ss"
-//            );
-//        }
+
         if (!errorMessage.isEmpty()) {
             throw new IllegalArgumentException(errorMessage.toString());
         }
     }
 
-    private ITask mapInput(String userId, V1CreateTaskInput input) {
-        ITask task = taskObjectProvider.getObject();
-        task.setUserId(userId);
+    private ITaskDTO mapInput(V1CreateTaskInput input) {
+        ITaskDTO task = taskObjectProvider.getObject();
         task.setTitle(input.getTitle());
         task.setDescription(input.getDescription());
         task.setUrgency(input.getUrgency().getValue());

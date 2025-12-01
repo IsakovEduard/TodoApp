@@ -16,11 +16,11 @@ public class DeleteTasksByIdsDelegate {
     private IDeleteTasksByIdsApplicationService deleteTasksByIdsApplicationService;
 
 
-    public int delete(String userId, V1DeleteTaskInput v1DeleteTaskInput) {
+    public int delete(V1DeleteTaskInput v1DeleteTaskInput) {
         // TODO: Validate input
-        logger.info("In logger with input userId: {}, v1DeleteTaskInput: {}", userId, v1DeleteTaskInput);
+        logger.info("In logger with input v1DeleteTaskInput: {}", v1DeleteTaskInput);
 
 
-        return deleteTasksByIdsApplicationService.execute(userId, v1DeleteTaskInput.getTaskIds());
+        return deleteTasksByIdsApplicationService.execute(v1DeleteTaskInput.getTaskIds());
     }
 }

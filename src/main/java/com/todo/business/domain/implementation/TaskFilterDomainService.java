@@ -2,7 +2,7 @@ package com.todo.business.domain.implementation;
 
 import com.todo.business.domain.interfaces.ITaskFilterDomainService;
 import com.todo.business.model.implementation.Filter;
-import com.todo.repository.DTO.TaskDTO;
+import com.todo.repository.entity.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +13,7 @@ public class TaskFilterDomainService implements ITaskFilterDomainService {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskFilterDomainService.class);
     @Override
-    public List<TaskDTO> applyFilter(List<TaskDTO> tasks, Filter filter) {
+    public List<Task> applyFilter(List<Task> tasks, Filter filter) {
         if (tasks == null || tasks.isEmpty() || filter == null) {
             logger.info("In TaskFilterDomainService with empty payload");
             return tasks; // return original list if null/empty or no filter

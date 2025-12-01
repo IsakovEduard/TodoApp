@@ -1,98 +1,93 @@
-package com.todo.repository.DTO;
+package com.todo.business.model.implementation;
 
-import jakarta.persistence.*;
+import com.todo.business.model.interfaces.ITaskDTO;
+import com.todo.repository.entity.User;
 
 import java.time.LocalDateTime;
 
-@Entity
-public class TaskDTO {
+public class TaskDTO implements ITaskDTO {
 
-
-    @Id
-    @Column(name ="id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "user_id")
-    private String userId;
-    @Column(name ="title")
+    private User user;
     private String title;
-    @Column(name ="task_description")
     private String description;
-    @Column(name ="due_date")
     private LocalDateTime dueDate;
-    @Column(name ="urgency")
     private String urgency;
-    @Column(name ="created_at")
     private LocalDateTime createdAt;
-    @Column(name ="status")
     private String status;
-    @Column(name = "activation_status")
     private String activationStatus;
 
+
+    @Override
     public Long getId() {
         return id;
     }
+    @Override
     public void setId(Long id) {
         this.id = id;
     }
-    public String getUserId() {
-        return userId;
-    }
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-    public String getDescription() {
-        return description;
+    @Override
+    public User getUser() {
+        return user;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    @Override
+    public void setUser(User user) {
+        this.user = user;
     }
-
+    @Override
     public String getTitle() {
         return title;
     }
-
+    @Override
     public void setTitle(String title) {
         this.title = title;
     }
-
+    @Override
+    public String getDescription() {
+        return description;
+    }
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    @Override
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-
+    @Override
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-
+    @Override
     public LocalDateTime getDueDate() {
         return dueDate;
     }
-
+    @Override
     public void setDueDate(LocalDateTime dueDate) {
         this.dueDate = dueDate;
     }
-
+    @Override
     public String getUrgency() {
         return urgency;
     }
-
+    @Override
     public void setUrgency(String urgency) {
         this.urgency = urgency;
     }
-
+    @Override
     public String getStatus() {
         return status;
     }
-
+    @Override
     public void setStatus(String status) {
         this.status = status;
     }
-
+    @Override
     public String getActivationStatus() {
         return activationStatus;
     }
-
+    @Override
     public void setActivationStatus(String activationStatus) {
         this.activationStatus = activationStatus;
     }
@@ -101,7 +96,7 @@ public class TaskDTO {
     public String toString() {
         final StringBuilder sb = new StringBuilder("TaskDTO{");
         sb.append("id=").append(id);
-        sb.append(", userId='").append(userId).append('\'');
+        sb.append(", user=").append(user);
         sb.append(", title='").append(title).append('\'');
         sb.append(", description='").append(description).append('\'');
         sb.append(", dueDate=").append(dueDate);

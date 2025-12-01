@@ -5,5 +5,5 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public interface IDeleteTasksByIdsApplicationService {
-    int execute(String userId, List<String> taskIds);
+    int execute(List<String> taskIds);
 }

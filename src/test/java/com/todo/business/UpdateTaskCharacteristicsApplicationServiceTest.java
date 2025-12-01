@@ -2,20 +2,27 @@ package com.todo.business;
 
 import com.todo.business.model.implementation.Characteristic;
 import com.todo.business.model.implementation.PatchElement;
-import com.todo.business.model.interfaces.ITask;
+import com.todo.business.model.interfaces.ITaskDTO;
 import com.todo.business.service.implementation.UpdateTaskCharacteristicsApplicationService;
-import com.todo.repository.DTO.TaskDTO;
+import com.todo.business.service.interfaces.IGetUserServiceFromContextService;
+import com.todo.repository.entity.Task;
+import com.todo.repository.entity.User;
 import com.todo.repository.mapper.interfaces.IMapTaskToTaskDTO;
 import com.todo.repository.service.interfaces.ITaskJpaRepository;
 import com.todo.repository.service.interfaces.ITaskRepository;
+import com.todo.repository.service.interfaces.IUserJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -24,12 +31,14 @@ class UpdateTaskCharacteristicsApplicationServiceTest {
 
     @Mock
     private ITaskRepository taskRepository;
-
+    @Mock
+    private IUserJpaRepository userJpaRepository;
     @Mock
     private ITaskJpaRepository jpaRepository;
-
     @Mock
     private IMapTaskToTaskDTO mapTaskToTaskDTO;
+    @Mock
+    private IGetUserServiceFromContextService getUserServiceFromContextService;
 
     @InjectMocks
     private UpdateTaskCharacteristicsApplicationService service;
@@ -37,11 +46,26 @@ class UpdateTaskCharacteristicsApplicationServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        // 1) Mock SecurityContext with authenticated user
+        UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken("testUser", null, List.of());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        // 2) Mock userJpaRepository to return a valid User
+        User mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setUsername("testUser");
+
+        when(getUserServiceFromContextService.getUserFromContext())
+                .thenReturn(mockUser);
     }
 
     @Test
     void execute_ShouldUpdateTaskCharacteristicsAndReturnMappedTask() {
-        String userId = "user1";
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("testUser");
         String taskId = "100";
 
         // Mock input PatchElement
@@ -56,65 +80,68 @@ class UpdateTaskCharacteristicsApplicationServiceTest {
         ));
 
         // Mock repository return
-        TaskDTO taskDTO = new TaskDTO();
-        taskDTO.setId(Long.valueOf(taskId));
-        taskDTO.setUserId(userId);
-        taskDTO.setTitle("Old Title");
-        taskDTO.setDescription("Old description");
-        taskDTO.setDueDate(LocalDateTime.parse("2025-11-01T12:00:00"));
-        taskDTO.setStatus("IN_PROGRESS");
-        taskDTO.setUrgency("LOW");
+        Task task = new Task();
+        task.setId(Long.valueOf(taskId));
+        task.setUser(user);
+        task.setTitle("Old Title");
+        task.setDescription("Old description");
+        task.setDueDate(LocalDateTime.parse("2025-11-01T12:00:00"));
+        task.setStatus("IN_PROGRESS");
+        task.setUrgency("LOW");
 
-        when(taskRepository.getTaskByUserIdAndTaskId(userId, Long.valueOf(taskId))).thenReturn(taskDTO);
-        when(jpaRepository.save(taskDTO)).thenReturn(taskDTO);
+        when(taskRepository.getTaskByUserIdAndTaskId(user.getId(), Long.valueOf(taskId))).thenReturn(task);
+        when(jpaRepository.save(task)).thenReturn(task);
 
         // Mock mapper return
-        ITask mappedTask = mock(ITask.class);
-        when(mapTaskToTaskDTO.reverseMap(taskDTO)).thenReturn(mappedTask);
+        ITaskDTO mappedTask = mock(ITaskDTO.class);
+        when(mapTaskToTaskDTO.reverseMap(task)).thenReturn(mappedTask);
 
         // Call the service
-        ITask result = service.execute(userId, patchElement);
+        ITaskDTO result = service.execute(patchElement);
 
         // Verify updates on DTO
-        assertEquals("New Title", taskDTO.getTitle());
-        assertEquals("Updated description", taskDTO.getDescription());
-        assertEquals(LocalDateTime.parse("2025-12-01T12:00:00"), taskDTO.getDueDate());
-        assertEquals("COMPLETED", taskDTO.getStatus());
-        assertEquals("HIGH", taskDTO.getUrgency());
+        assertEquals("New Title", task.getTitle());
+        assertEquals("Updated description", task.getDescription());
+        assertEquals(LocalDateTime.parse("2025-12-01T12:00:00"), task.getDueDate());
+        assertEquals("COMPLETED", task.getStatus());
+        assertEquals("HIGH", task.getUrgency());
 
         // Verify service returned mapped task
         assertSame(mappedTask, result);
 
         // Verify interactions
-        verify(taskRepository, times(1)).getTaskByUserIdAndTaskId(userId, Long.valueOf(taskId));
-        verify(jpaRepository, times(1)).save(taskDTO);
-        verify(mapTaskToTaskDTO, times(1)).reverseMap(taskDTO);
+        verify(taskRepository, times(1)).getTaskByUserIdAndTaskId(user.getId(), Long.valueOf(taskId));
+        verify(jpaRepository, times(1)).save(task);
+        verify(mapTaskToTaskDTO, times(1)).reverseMap(task);
     }
 
     @Test
     void execute_WithEmptyCharacteristics_ShouldNotChangeTaskButReturnMappedTask() {
-        String userId = "user1";
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("testUser");
+
         String taskId = "100";
 
         PatchElement patchElement = new PatchElement();
         patchElement.setTaskId(taskId);
         patchElement.setChangeCharacteristics(List.of()); // empty changes
 
-        TaskDTO taskDTO = new TaskDTO();
-        taskDTO.setId(Long.valueOf(taskId));
-        taskDTO.setUserId(userId);
+        Task task = new Task();
+        task.setId(Long.valueOf(taskId));
+        task.setUser(user);
 
-        when(taskRepository.getTaskByUserIdAndTaskId(userId, Long.valueOf(taskId))).thenReturn(taskDTO);
-        when(jpaRepository.save(taskDTO)).thenReturn(taskDTO);
+        when(taskRepository.getTaskByUserIdAndTaskId(user.getId(), Long.valueOf(taskId))).thenReturn(task);
+        when(jpaRepository.save(task)).thenReturn(task);
 
-        ITask mappedTask = mock(ITask.class);
-        when(mapTaskToTaskDTO.reverseMap(taskDTO)).thenReturn(mappedTask);
+        ITaskDTO mappedTask = mock(ITaskDTO.class);
+        when(mapTaskToTaskDTO.reverseMap(task)).thenReturn(mappedTask);
 
-        ITask result = service.execute(userId, patchElement);
+        ITaskDTO result = service.execute(patchElement);
 
         assertSame(mappedTask, result);
-        verify(taskRepository, times(1)).getTaskByUserIdAndTaskId(userId, Long.valueOf(taskId));
-        verify(jpaRepository, times(1)).save(taskDTO);
-        verify(mapTaskToTaskDTO, times(1)).reverseMap(taskDTO);
+        verify(taskRepository, times(1)).getTaskByUserIdAndTaskId(user.getId(), Long.valueOf(taskId));
+        verify(jpaRepository, times(1)).save(task);
+        verify(mapTaskToTaskDTO, times(1)).reverseMap(task);
     }
 }
