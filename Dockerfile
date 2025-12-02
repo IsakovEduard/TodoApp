@@ -16,11 +16,19 @@ RUN mvn -q clean package -DskipTests
 FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
-RUN useradd -m springuser
+# Create a user and data directory BEFORE switching user
+RUN useradd -m springuser \
+    && mkdir -p /app/data \
+    && chown -R springuser:springuser /app/data
+
+# Switch to non-root user
 USER springuser
 
+# Copy jar from builder stage
 COPY --from=builder /app/target/*.jar app.jar
 
+# Expose port
 EXPOSE 8080
 
+# Run the application
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

@@ -9,7 +9,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
     volumes:
-      - h2-data:/app/data
+      - h2-data:/app/data   # Mounts the volume to /app/data
 
 volumes:
-  h2-data:
+  h2-data:                 # Named volume
