@@ -23,7 +23,6 @@ public class CreateTaskDelegate {
     @Inject
     private ObjectProvider<ITaskDTO> taskObjectProvider;
     public ITaskDTO addTask( V1CreateTaskInput v1CreateTaskInput) {
-        // TODO: Validate input
         logger.info("Executing AddTaskDelegate: {}", v1CreateTaskInput);
         validateInput(v1CreateTaskInput);
         ITaskDTO result = createTaskApplicationService.execute(mapInput(v1CreateTaskInput));
