@@ -26,7 +26,7 @@ public class GetTasksByFilterDelegate {
 
     public List<V1Task> execute(String taskId, String status, String urgency) {
 
-        logger.info("In GetTasksByFilterDelegate with input: filter values: taskId={},status={},urgency{}", taskId, status, urgency);
+        logger.info("In GetTasksByFilterDelegate with input: filter values: taskId={},status={},urgency={}", taskId, status, urgency);
         Filter filter = null;
         boolean isInputFilterEmpty = StringUtils.isEmpty(taskId) && StringUtils.isEmpty(status) && StringUtils.isEmpty(urgency);
         logger.info("isInputFilterEmpty: {}", isInputFilterEmpty);

@@ -60,6 +60,7 @@ public class UpdateTaskCharacteristicsApplicationService implements IUpdateTaskC
                 case "CREATED_AT" -> task.setCreatedAt(LocalDateTime.parse(newCharValue));
                 case "URGENCY" -> task.setUrgency(newCharValue);
                 case "STATUS" -> task.setStatus(newCharValue);
+                default -> throw new IllegalArgumentException(charName + " is not valid value for update!");
             }
         });
     }
