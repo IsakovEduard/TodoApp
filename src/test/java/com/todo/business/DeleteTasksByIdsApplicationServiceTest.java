@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -26,6 +28,10 @@ class DeleteTasksByIdsApplicationServiceTest {
     private ITaskJpaRepository taskJpaRepository;
     @Mock
     private IUserJpaRepository userJpaRepository;
+    @Mock
+    private CacheManager cacheManager;
+    @Mock
+    private Cache cache;
     @Mock
     private IGetUserServiceFromContextService getUserServiceFromContextService;
 
@@ -47,6 +53,8 @@ class DeleteTasksByIdsApplicationServiceTest {
         mockUser.setUsername("testUser");
         when(getUserServiceFromContextService.getUserFromContext())
                 .thenReturn(mockUser);
+
+        when(cacheManager.getCache("tasks")).thenReturn(cache);
     }
 
     @Test

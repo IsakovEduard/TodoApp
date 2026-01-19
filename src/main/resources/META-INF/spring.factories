@@ -6,4 +6,5 @@ com.todo.repository.config.RepositoryConfig,\
 com.todo.business.config.BusinessModelsConfig,\
 com.todo.business.config.ApplicationServiceConfig,\
 com.todo.business.config.DomainServiceConfig,\
+com.todo.business.config.CacheConfig,\
 com.todo.repository.config.EntityConfig

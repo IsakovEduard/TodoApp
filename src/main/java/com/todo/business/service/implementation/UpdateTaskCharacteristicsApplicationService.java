@@ -13,6 +13,7 @@ import com.todo.repository.service.interfaces.ITaskRepository;
 import com.todo.repository.service.interfaces.IUserJpaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.inject.Inject;
@@ -33,6 +34,11 @@ public class UpdateTaskCharacteristicsApplicationService implements IUpdateTaskC
     private IGetUserServiceFromContextService getUserServiceFromContextService;
 
     @Override
+    @CachePut(
+            cacheNames = "tasks",
+            key = "#patchElement.taskId",
+            unless = "#result == null"
+    )
     public ITaskDTO execute(PatchElement patchElement) {
         logger.info("Executing UpdateTaskCharacteristicsApplicationService with input: {}", patchElement);
 

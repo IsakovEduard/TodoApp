@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -33,6 +34,8 @@ class UpdateTaskCharacteristicsApplicationServiceTest {
     private ITaskRepository taskRepository;
     @Mock
     private IUserJpaRepository userJpaRepository;
+    @Mock
+    private CacheManager cacheManager;
     @Mock
     private ITaskJpaRepository jpaRepository;
     @Mock
