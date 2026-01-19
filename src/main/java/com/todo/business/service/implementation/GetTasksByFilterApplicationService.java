@@ -9,10 +9,7 @@ import com.todo.repository.entity.Task;
 import com.todo.repository.entity.User;
 import com.todo.repository.mapper.interfaces.IMapTaskToTaskDTO;
 import com.todo.repository.service.interfaces.ITaskRepository;
-import com.todo.repository.service.interfaces.IUserJpaRepository;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.CollectionUtils;
-
 
 import javax.inject.Inject;
 import java.util.ArrayList;

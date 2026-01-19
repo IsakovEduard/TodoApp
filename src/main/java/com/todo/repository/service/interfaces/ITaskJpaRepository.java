@@ -15,7 +15,6 @@ import java.util.Optional;
 public interface ITaskJpaRepository extends JpaRepository<Task, Long> {
     List<Task> findByUserId(Long userId);
     Optional<Task> findByUserIdAndId(Long userId, Long taskId);
-
     @Modifying
     @Transactional
     @Query("""

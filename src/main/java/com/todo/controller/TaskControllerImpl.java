@@ -3,10 +3,7 @@ package com.todo.controller;
 import com.todo.business.model.interfaces.ITaskDTO;
 import com.todo.controller.api.interfaces.TaskManagementApi;
 import com.todo.controller.api.model.*;
-import com.todo.resource.delegate.CreateTaskDelegate;
-import com.todo.resource.delegate.DeleteTasksByIdsDelegate;
-import com.todo.resource.delegate.GetTasksByFilterDelegate;
-import com.todo.resource.delegate.UpdateTaskCharacteristicsDelegate;
+import com.todo.resource.delegate.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,6 +21,8 @@ public class TaskControllerImpl implements TaskManagementApi {
     private DeleteTasksByIdsDelegate deleteTasksByIdsDelegate;
     @Inject
     private UpdateTaskCharacteristicsDelegate updateTaskCharacteristicsDelegate;
+    @Inject
+    private GetTaskByIdDelegate getTaskIdDelegate;
 
     @Override
     public ResponseEntity<String> createTask(V1CreateTaskInput v1CreateTaskInput) {
@@ -35,6 +34,12 @@ public class TaskControllerImpl implements TaskManagementApi {
     public ResponseEntity<Integer> deleteTask( V1DeleteTaskInput v1DeleteTaskInput) {
         int deletedInstances = deleteTasksByIdsDelegate.delete(v1DeleteTaskInput);
         return ResponseEntity.ok().body(deletedInstances);
+    }
+
+    @Override
+    public ResponseEntity<V1Task> getTaskById(String taskId) {
+        V1Task result = getTaskIdDelegate.execute(taskId);
+        return ResponseEntity.ok().body(result);
     }
 
     @Override

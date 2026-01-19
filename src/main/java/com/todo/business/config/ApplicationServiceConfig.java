@@ -29,4 +29,8 @@ public class ApplicationServiceConfig {
     public IGetUserServiceFromContextService getUserServiceFromContextService() {
         return new GetUserServiceFromContextServiceService();
     }
+    @Bean
+    public IGetTaskByIdApplicationService getTaskByIdApplicationService() {
+        return new GetTaskByIdApplicationService();
+    }
 }

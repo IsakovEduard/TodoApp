@@ -108,6 +108,25 @@ paths:
                 items:
                   $ref: '#/components/schemas/V1Task'
 
+  /task-management/{taskId}:
+    get:
+      description:
+        Get specific task by id
+      operationId: getTaskById
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1Task'
+
 components:
   schemas:
     V1Task:

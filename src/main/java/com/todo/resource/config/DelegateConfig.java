@@ -1,10 +1,7 @@
 package com.todo.resource.config;
 
 
-import com.todo.resource.delegate.CreateTaskDelegate;
-import com.todo.resource.delegate.DeleteTasksByIdsDelegate;
-import com.todo.resource.delegate.GetTasksByFilterDelegate;
-import com.todo.resource.delegate.UpdateTaskCharacteristicsDelegate;
+import com.todo.resource.delegate.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -26,5 +23,9 @@ public class DelegateConfig {
     @Bean
     public UpdateTaskCharacteristicsDelegate updateTaskCharacteristicsDelegate() {
         return new UpdateTaskCharacteristicsDelegate();
+    }
+    @Bean
+    public GetTaskByIdDelegate getTaskByIdDelegate() {
+        return new GetTaskByIdDelegate();
     }
 }
