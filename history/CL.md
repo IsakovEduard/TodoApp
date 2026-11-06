@@ -1,5 +1,6 @@
 # Change List
 
+- 2026-11-06 – FIX: Return 400 for missing or invalid urgency and unreadable request bodies
 - 2026-11-06 – FIX: Enforce validation on registration and login requests
 - 2026-11-06 – FIX: Reject tokens of non-existent users with 403 and remove unused ForbiddenException
 - 2026-11-06 – FIX: Return 404 for missing tasks and 401 for invalid credentials instead of 500

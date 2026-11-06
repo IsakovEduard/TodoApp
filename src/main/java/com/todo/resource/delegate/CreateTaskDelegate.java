@@ -5,8 +5,6 @@ import com.todo.business.model.interfaces.ITaskDTO;
 import com.todo.business.service.interfaces.ICreateTaskApplicationService;
 
 import com.todo.controller.api.model.V1CreateTaskInput;
-import com.todo.controller.api.model.V1Urgency;
-import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +36,7 @@ public class CreateTaskDelegate {
         if (StringUtils.isEmpty(input.getDescription())) {
             errorMessage.append("Description can not be empty. ");
         }
-        if (StringUtils.isEmpty(input.getUrgency().getValue()) || !EnumUtils.isValidEnum(V1Urgency.class, input.getUrgency().getValue())) {
+        if (input.getUrgency() == null) {
             errorMessage.append("Urgency value is null or not valid.");
         }
 

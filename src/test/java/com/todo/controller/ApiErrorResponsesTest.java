@@ -68,6 +68,36 @@ class ApiErrorResponsesTest {
     }
 
     @Test
+    void createTask_ShouldReturn400_WhenUrgencyIsMissing() throws Exception {
+        String token = loginAs(registerUser());
+
+        mockMvc.perform(post("/task-management").header("Authorization", bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"t\",\"description\":\"d\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createTask_ShouldReturn400_WhenUrgencyIsNotAllowed() throws Exception {
+        String token = loginAs(registerUser());
+
+        mockMvc.perform(post("/task-management").header("Authorization", bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"t\",\"description\":\"d\",\"urgency\":\"URGENT\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createTask_ShouldReturn400_WhenBodyIsMalformed() throws Exception {
+        String token = loginAs(registerUser());
+
+        mockMvc.perform(post("/task-management").header("Authorization", bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{not json"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void getTaskById_ShouldReturn404_WhenTaskDoesNotExist() throws Exception {
         String token = loginAs(registerUser());
 
