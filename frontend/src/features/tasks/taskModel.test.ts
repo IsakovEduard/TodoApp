@@ -142,9 +142,21 @@ describe('changedCharacteristics', () => {
     expect(changedCharacteristics(original, values)).toEqual([{ name: 'DUE_DATE', value: '2026-12-01T09:30' }])
   })
 
-  it('does not send an emptied due date because the API cannot clear it', () => {
+  it('sends an empty due date to clear it', () => {
     const values = { ...toFormValues(original), dueDate: '' }
 
-    expect(changedCharacteristics(original, values)).toEqual([])
+    expect(changedCharacteristics(original, values)).toEqual([{ name: 'DUE_DATE', value: '' }])
+  })
+
+  it('sends nothing for a due date that was empty and stays empty', () => {
+    const undated = task({ dueDate: null })
+
+    expect(changedCharacteristics(undated, toFormValues(undated))).toEqual([])
+  })
+
+  it('sends an emptied description so it can be removed', () => {
+    const values = { ...toFormValues(original), description: '  ' }
+
+    expect(changedCharacteristics(original, values)).toEqual([{ name: 'DESCRIPTION', value: '' }])
   })
 })

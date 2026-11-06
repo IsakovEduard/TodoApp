@@ -12,6 +12,10 @@ import com.todo.repository.service.interfaces.ITaskJpaRepository;
 import com.todo.repository.service.interfaces.ITaskRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -103,6 +107,33 @@ class UpdateTaskCharacteristicsApplicationServiceTest {
         Task task = new Task();
         task.setId(Long.valueOf(TASK_ID));
         stubPersistedTask(task);
+
+        assertThrows(IllegalArgumentException.class, () -> service.execute(patchElement));
+        verify(jpaRepository, never()).save(any());
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"   "})
+    void execute_ShouldClearDueDate_WhenValueIsBlank(String blankValue) {
+        Task task = new Task();
+        task.setId(Long.valueOf(TASK_ID));
+        task.setDueDate(LocalDateTime.parse("2025-11-01T12:00:00"));
+        stubPersistedTask(task);
+
+        service.execute(new PatchElement(TASK_ID, List.of(new Characteristic("due_date", blankValue))));
+
+        assertNull(task.getDueDate());
+        verify(jpaRepository).save(task);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"status,BANANA", "urgency,URGENT", "due_date,tomorrow", "created_at,yesterday"})
+    void execute_ShouldThrowIllegalArgumentException_WhenValueIsNotAllowed(String name, String value) {
+        Task task = new Task();
+        task.setId(Long.valueOf(TASK_ID));
+        stubPersistedTask(task);
+        PatchElement patchElement = new PatchElement(TASK_ID, List.of(new Characteristic(name, value)));
 
         assertThrows(IllegalArgumentException.class, () -> service.execute(patchElement));
         verify(jpaRepository, never()).save(any());

@@ -3,6 +3,8 @@ package com.todo.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.todo.security.jwt.JwtUtil;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -96,6 +99,53 @@ class ApiIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{not json"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createTask_ShouldReturn201_WhenDescriptionIsMissing() throws Exception {
+        String token = loginAs(registerUser());
+
+        String taskId = mockMvc.perform(post("/task-management").header("Authorization", bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"No details\",\"urgency\":\"LOW\"}"))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        mockMvc.perform(get("/task-management/" + taskId).header("Authorization", bearer(token)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("No details"));
+    }
+
+    @Test
+    void updateTask_ShouldClearDueDate_WhenValueIsEmpty() throws Exception {
+        String token = loginAs(registerUser());
+        String taskId = createTask(token);
+
+        mockMvc.perform(put("/task-management").header("Authorization", bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"taskId\":\"" + taskId + "\",\"characteristics\":[{\"name\":\"DUE_DATE\",\"value\":\"\"}]}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].dueDate").value(nullValue()));
+
+        mockMvc.perform(get("/task-management/" + taskId).header("Authorization", bearer(token)))
+                .andExpect(jsonPath("$.dueDate").value(nullValue()));
+    }
+
+    @ParameterizedTest
+    @CsvSource({"STATUS,BANANA", "URGENCY,URGENT", "DUE_DATE,tomorrow"})
+    void updateTask_ShouldReturn400AndKeepTaskIntact_WhenValueIsNotAllowed(String name, String value) throws Exception {
+        String token = loginAs(registerUser());
+        String taskId = createTask(token);
+
+        mockMvc.perform(put("/task-management").header("Authorization", bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"taskId\":\"" + taskId + "\",\"characteristics\":[{\"name\":\"" + name + "\",\"value\":\"" + value + "\"}]}"))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(get("/task-management").header("Authorization", bearer(token)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].status").value("IN_PROGRESS"))
+                .andExpect(jsonPath("$[0].urgency").value("LOW"));
     }
 
     @Test

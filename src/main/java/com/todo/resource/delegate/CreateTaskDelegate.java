@@ -33,9 +33,6 @@ public class CreateTaskDelegate {
         if (StringUtils.isEmpty(input.getTitle())) {
             errorMessage.append("Title can not be empty. ");
         }
-        if (StringUtils.isEmpty(input.getDescription())) {
-            errorMessage.append("Description can not be empty. ");
-        }
         if (input.getUrgency() == null) {
             errorMessage.append("Urgency value is null or not valid.");
         }

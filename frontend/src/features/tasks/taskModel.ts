@@ -125,7 +125,7 @@ export function toFormValues(task?: Task): TaskFormValues {
 
 /**
  * Builds the characteristics to send for an update: only fields that changed.
- * The API cannot clear a due date, so an emptied due date is not sent.
+ * An emptied due date is sent as an empty value, which makes the API clear it.
  */
 export function changedCharacteristics(original: Task, values: TaskFormValues): V1Characteristic[] {
   const changes: V1Characteristic[] = []
@@ -141,7 +141,7 @@ export function changedCharacteristics(original: Task, values: TaskFormValues): 
   if (values.status !== original.status) {
     changes.push({ name: 'STATUS', value: values.status })
   }
-  if (values.dueDate !== '' && values.dueDate !== toInputValue(original.dueDate)) {
+  if (values.dueDate !== toInputValue(original.dueDate)) {
     changes.push({ name: 'DUE_DATE', value: values.dueDate })
   }
   return changes

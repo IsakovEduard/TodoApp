@@ -318,11 +318,16 @@ components:
 
     V1Characteristic:
       type: object
+      description: One field change. Unknown names, and values outside the allowed set, are rejected with 400.
       properties:
         name:
           type: string
+          description: One of TITLE, DESCRIPTION, DUE_DATE, CREATED_AT, URGENCY, STATUS (case-insensitive).
         value:
           type: string
+          description: >-
+            New value. DUE_DATE takes an ISO local date-time such as 2026-12-01T09:30, and an empty
+            value clears it. URGENCY and STATUS must be one of their enum values.
 
     V1Urgency:
       type: string

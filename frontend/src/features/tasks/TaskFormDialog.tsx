@@ -32,7 +32,6 @@ export function TaskFormDialog({ task, onClose }: TaskFormDialogProps) {
   const pending = creating || updating
 
   const titleMissing = submitted && values.title.trim() === ''
-  const descriptionMissing = submitted && values.description.trim() === ''
 
   function set<K extends keyof TaskFormValues>(key: K, value: TaskFormValues[K]) {
     setValues((current) => ({ ...current, [key]: value }))
@@ -42,7 +41,7 @@ export function TaskFormDialog({ task, onClose }: TaskFormDialogProps) {
     event.preventDefault()
     setSubmitted(true)
     setServerError(null)
-    if (values.title.trim() === '' || values.description.trim() === '') {
+    if (values.title.trim() === '') {
       return
     }
 
@@ -58,7 +57,7 @@ export function TaskFormDialog({ task, onClose }: TaskFormDialogProps) {
         await createTask({
           v1CreateTaskInput: {
             title: values.title.trim(),
-            description: values.description.trim(),
+            description: values.description.trim() === '' ? undefined : values.description.trim(),
             urgency: values.urgency,
             dueDate: values.dueDate === '' ? undefined : values.dueDate,
           },
@@ -109,16 +108,9 @@ export function TaskFormDialog({ task, onClose }: TaskFormDialogProps) {
             rows={3}
             value={values.description}
             onChange={(event) => set('description', event.target.value)}
-            aria-invalid={descriptionMissing}
-            aria-describedby={descriptionMissing ? `${ids}-description-error` : undefined}
-            placeholder="Add details"
+            placeholder="Add details (optional)"
             className={`${fieldClass} resize-y py-3`}
           />
-          {descriptionMissing && (
-            <p id={`${ids}-description-error`} className="text-sm text-danger">
-              Description is required
-            </p>
-          )}
         </div>
 
         <fieldset className="m-0 flex flex-col gap-1.5 border-0 p-0">
@@ -159,14 +151,8 @@ export function TaskFormDialog({ task, onClose }: TaskFormDialogProps) {
             type="datetime-local"
             value={values.dueDate}
             onChange={(event) => set('dueDate', event.target.value)}
-            aria-describedby={task?.dueDate ? `${ids}-due-hint` : undefined}
             className={`${fieldClass} h-12`}
           />
-          {task?.dueDate && (
-            <p id={`${ids}-due-hint`} className="text-sm text-muted">
-              A due date can be changed but not removed.
-            </p>
-          )}
         </div>
 
         {editing && (

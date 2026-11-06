@@ -17,7 +17,9 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UpdateTaskCharacteristicsApplicationService implements IUpdateTaskCharacteristicsApplicationService {
@@ -62,12 +64,29 @@ public class UpdateTaskCharacteristicsApplicationService implements IUpdateTaskC
             switch (characteristicName) {
                 case "TITLE" -> task.setTitle(newValue);
                 case "DESCRIPTION" -> task.setDescription(newValue);
-                case "DUE_DATE" -> task.setDueDate(LocalDateTime.parse(newValue));
-                case "CREATED_AT" -> task.setCreatedAt(LocalDateTime.parse(newValue));
-                case "URGENCY" -> task.setUrgency(newValue);
-                case "STATUS" -> task.setStatus(newValue);
+                case "DUE_DATE" -> task.setDueDate(newValue == null || newValue.isBlank()
+                        ? null
+                        : parseDateTime(characteristicName, newValue));
+                case "CREATED_AT" -> task.setCreatedAt(parseDateTime(characteristicName, newValue));
+                case "URGENCY" -> task.setUrgency(requireAllowed(characteristicName, newValue, TaskConstants.URGENCY_VALUES));
+                case "STATUS" -> task.setStatus(requireAllowed(characteristicName, newValue, TaskConstants.STATUS_VALUES));
                 default -> throw new IllegalArgumentException(characteristicName + " is not valid value for update!");
             }
         });
+    }
+
+    private static LocalDateTime parseDateTime(String field, String value) {
+        try {
+            return LocalDateTime.parse(Objects.requireNonNullElse(value, ""));
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException(field + " must be an ISO date-time, for example 2026-12-01T09:30");
+        }
+    }
+
+    private static String requireAllowed(String field, String value, List<String> allowedValues) {
+        if (value == null || !allowedValues.contains(value)) {
+            throw new IllegalArgumentException(field + " must be one of " + allowedValues);
+        }
+        return value;
     }
 }

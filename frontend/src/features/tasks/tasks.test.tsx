@@ -76,7 +76,10 @@ function useFakeApi(initial: V1Task[] = SAMPLE_TASKS) {
       api.updates.push(body)
       const task = api.tasks.find((candidate) => candidate.id === body.taskId)!
       const changes = Object.fromEntries(
-        (body.characteristics ?? []).map(({ name, value }) => [FIELD_BY_NAME[name!], value]),
+        (body.characteristics ?? []).map(({ name, value }) => [
+          FIELD_BY_NAME[name!],
+          name === 'DUE_DATE' && !value ? null : value,
+        ]),
       )
       Object.assign(task, changes)
       return HttpResponse.json([task])
@@ -181,7 +184,6 @@ describe('creating a task', () => {
 
     await userEvent.click(within(dialog).getByRole('button', { name: 'Create task' }))
     expect(within(dialog).getByText('Title is required')).toBeInTheDocument()
-    expect(within(dialog).getByText('Description is required')).toBeInTheDocument()
     expect(api.created).toHaveLength(0)
 
     await userEvent.type(within(dialog).getByLabelText('Title'), 'Buy milk')
@@ -196,6 +198,19 @@ describe('creating a task', () => {
       { title: 'Buy milk', description: 'Two liters', urgency: 'HIGH', dueDate: '2099-12-01T09:30' },
     ])
     expect(rowTitles()).toContain('Buy milk')
+  })
+
+  it('creates a task with only a title and no description or due date', async () => {
+    const api = useFakeApi([])
+    renderApp('/tasks/new', 'token')
+    const dialog = await screen.findByRole('dialog', { name: 'New task' })
+
+    await userEvent.type(within(dialog).getByLabelText('Title'), 'Quick note')
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Create task' }))
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(api.created).toEqual([{ title: 'Quick note', urgency: 'NORMAL' }])
+    expect(await screen.findByRole('link', { name: 'Quick note' })).toBeInTheDocument()
   })
 
   it('shows the server message and keeps the dialog open on failure', async () => {
@@ -268,23 +283,17 @@ describe('editing a task', () => {
     expect(api.updates).toHaveLength(0)
   })
 
-  it('explains that an existing due date cannot be removed', async () => {
-    useFakeApi()
+  it('clears the due date when the field is emptied', async () => {
+    const api = useFakeApi()
     renderApp('/tasks/3', 'token')
     const dialog = await screen.findByRole('dialog', { name: 'Edit task' })
 
-    expect(within(dialog).getByText('A due date can be changed but not removed.')).toBeInTheDocument()
-    expect(within(dialog).getByLabelText('Due date and time')).toHaveAccessibleDescription(
-      'A due date can be changed but not removed.',
-    )
-  })
+    fireEvent.change(within(dialog).getByLabelText('Due date and time'), { target: { value: '' } })
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Save changes' }))
 
-  it('does not show that hint for a task without a due date', async () => {
-    useFakeApi([{ ...SAMPLE_TASKS[0], dueDate: undefined }])
-    renderApp('/tasks/1', 'token')
-    const dialog = await screen.findByRole('dialog', { name: 'Edit task' })
-
-    expect(within(dialog).queryByText(/cannot be removed|not removed/)).not.toBeInTheDocument()
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(api.updates).toEqual([{ taskId: '3', characteristics: [{ name: 'DUE_DATE', value: '' }] }])
+    expect(await screen.findAllByText('No due date')).not.toHaveLength(0)
   })
 
   it('says so when the task does not exist', async () => {

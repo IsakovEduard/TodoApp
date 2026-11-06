@@ -141,7 +141,9 @@ export type V1DeleteTaskInput = {
   taskIds: string[];
 };
 export type V1Characteristic = {
+  /** One of TITLE, DESCRIPTION, DUE_DATE, CREATED_AT, URGENCY, STATUS (case-insensitive). */
   name?: string;
+  /** New value. DUE_DATE takes an ISO local date-time such as 2026-12-01T09:30, and an empty value clears it. URGENCY and STATUS must be one of their enum values. */
   value?: string;
 };
 export type V1UpdateCharacteristicsInput = {
