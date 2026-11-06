@@ -1,5 +1,6 @@
 # Change List
 
+- 2026-11-06 – FEATURE: Add React web UI with authentication and switchable light and dark themes
 - 2026-11-06 – FEATURE: Prepare the backend for a bundled web UI
 - 2026-11-06 – CHORE: Give the dev profile its own local H2 database file
 - 2026-11-06 – CHORE: Remove unused OpenAPI model template and ignore IDE build output

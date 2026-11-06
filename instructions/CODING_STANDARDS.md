@@ -79,3 +79,15 @@ Rules for writing new code and changing existing code in this project. Goal: cle
 - No unused imports, variables, methods or commented-out code.
 - No leftover `@Inject`, `@Autowired`, `System.out` or debug output.
 - `README.md` and `CLAUDE.md` updated if behavior, structure or conventions changed.
+
+## Frontend (TypeScript / React, `frontend/`)
+
+- TypeScript strict; no `any`, no `@ts-ignore`. Use `import type` for types. Prefer function components and hooks.
+- Group code by feature (`src/features/<name>/`): slice, components, pages and tests together. Shared pieces go in `src/components/` and `src/app/`.
+- Server data goes through the generated RTK Query client (`src/api/generated.ts`); never edit it, regenerate it. Client-only state (token, theme, filters, selection) goes in Redux slices.
+- Colors come from the CSS variables and Tailwind tokens (`bg-surface`, `text-muted`, `bg-accent`, ...) so light and dark themes both work. Do not hard-code colors in components.
+- Accessible by default: real `<button>`, `<a>`, `<label>` with `htmlFor`, `aria-label` on icon-only buttons, visible focus, 44px minimum touch targets, text contrast of at least 4.5:1 in both themes. Status, urgency and errors are conveyed by text, not color alone.
+- Layouts are mobile first and must work from 360px wide with no horizontal page scroll.
+- Component names `UpperCamelCase`, hooks `useXyz`, files named after their main export. Keep components small and focused; extract a hook or component rather than nesting deeply.
+- Tests with Vitest and Testing Library: query by role or label, as a user would. Mock the network with MSW, never the Redux store or RTK Query internals. Every new feature has tests for the success path and the main error paths.
+- Run `npm test`, `npm run build` and `npm run lint` (or `./mvnw clean verify`) before committing.

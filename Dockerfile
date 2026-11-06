@@ -8,9 +8,10 @@ RUN mvn -q dependency:go-offline
 
 # Copy source code
 COPY src ./src
+COPY frontend ./frontend
 
 # Build the project
-RUN mvn -q clean package -DskipTests
+RUN mvn -q clean package -DskipTests -DskipFrontendTests=true
 
 # ====== RUNTIME STAGE ======
 FROM eclipse-temurin:17-jdk

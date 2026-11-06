@@ -4,7 +4,7 @@
 
 ## Coding standards (load on demand)
 
-Read `instructions/CODING_STANDARDS.md` **before** writing, modifying, refactoring or reviewing Java code or tests, and apply it. Do not read it for tasks that don't touch code quality: answering questions, explaining code, git operations, documentation-only edits, or running builds and tests.
+Read `instructions/CODING_STANDARDS.md` **before** writing, modifying, refactoring or reviewing Java or frontend (TypeScript/React) code or tests, and apply it. Do not read it for tasks that don't touch code quality: answering questions, explaining code, git operations, documentation-only edits, or running builds and tests.
 
 ## Workflow rules
 
@@ -27,6 +27,7 @@ Read `instructions/CODING_STANDARDS.md` **before** writing, modifying, refactori
 - `resource/` – `delegate/` (input validation and request/response mapping between controller and services), `mapper/`
 - `repository/` – JPA `entity/`, `mapper/`, `service/` (repositories)
 - `security/` – JWT filter/util/properties, security config, user details service
+- `frontend/` (outside `src/`) – React + TypeScript + Vite + Redux Toolkit app. `src/api/generated.ts` is generated from the OpenAPI spec (`npm run api:generate`, do not edit); `src/api/baseApi.ts` adds the bearer token and logs out on a 401; `src/features/<name>/` holds slices, pages and their tests; `src/app/` is the store; the color theme uses CSS variables in `src/index.css` (light and dark palettes, toggled by a `dark` class on `<html>`), never hard-coded colors in components. Vite builds into `target/classes/static`
 - `ui/` – web UI hosting: `UiRoutes` (public paths, shared with `SecurityConfig`) and `SpaForwardingController`, which forwards client-side routes (`/login`, `/register`, `/tasks/**`) to `index.html`. The frontend build is served from `static/`. A new client route must be added to `UiRoutes` (both the constant and `PUBLIC_PATHS`)
 
 ## Conventions and gotchas
@@ -42,7 +43,8 @@ Read `instructions/CODING_STANDARDS.md` **before** writing, modifying, refactori
 
 ## Commands
 
-- Build/test: `./mvnw clean verify`
-- Run: `./mvnw spring-boot:run` or `docker compose up --build`
+- Build/test: `./mvnw clean verify` (also installs Node via `frontend-maven-plugin`, builds the UI and runs the frontend tests; add `-DskipFrontend` for backend-only work)
+- Frontend only: `cd frontend && npm test`, `npm run build`, `npm run lint`, `npm run dev`. After changing `task_management.yaml`, run `npm run api:generate` and commit the result. The Maven Node version (`frontend.node.version` in `pom.xml`) must satisfy the `engines` field in `frontend/package.json`
+- Run: `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev` or `docker compose up --build`
 - Manual API requests: `src/main/resources/test.http`
 - `out/` is IDE build output; don't commit it.
