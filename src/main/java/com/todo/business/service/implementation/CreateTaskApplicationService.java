@@ -1,8 +1,9 @@
 package com.todo.business.service.implementation;
 
+import com.todo.business.constant.TaskConstants;
 import com.todo.business.model.interfaces.ITaskDTO;
 import com.todo.business.service.interfaces.ICreateTaskApplicationService;
-import com.todo.business.service.interfaces.IGetUserServiceFromContextService;
+import com.todo.business.service.interfaces.IGetUserFromContextService;
 import com.todo.repository.entity.User;
 import com.todo.repository.mapper.interfaces.IMapTaskToTaskDTO;
 import com.todo.repository.service.interfaces.ITaskRepository;
@@ -19,27 +20,24 @@ public class CreateTaskApplicationService implements ICreateTaskApplicationServi
 
     private final ITaskRepository taskRepository;
     private final IMapTaskToTaskDTO mapper;
-    private final IGetUserServiceFromContextService getUserServiceFromContextService;
+    private final IGetUserFromContextService getUserFromContextService;
 
     public CreateTaskApplicationService(ITaskRepository taskRepository,
                                         IMapTaskToTaskDTO mapper,
-                                        IGetUserServiceFromContextService getUserServiceFromContextService) {
+                                        IGetUserFromContextService getUserFromContextService) {
         this.taskRepository = taskRepository;
         this.mapper = mapper;
-        this.getUserServiceFromContextService = getUserServiceFromContextService;
+        this.getUserFromContextService = getUserFromContextService;
     }
 
     @Override
     public ITaskDTO execute(ITaskDTO taskDto) {
-        logger.info("Executing CreateTaskApplicationService with input: {}", taskDto);
-        User user = getUserServiceFromContextService.getUserFromContext();
-        logger.info("user found: {}", user);
+        User user = getUserFromContextService.getUserFromContext();
+        logger.info("Creating task for userId={}", user.getId());
         taskDto.setUser(user);
-        // Populate fields with default values for new taskDto
         taskDto.setCreatedAt(LocalDateTime.now());
-        taskDto.setStatus("IN_PROGRESS");
-        taskDto.setActivationStatus("AC");
-
+        taskDto.setStatus(TaskConstants.STATUS_IN_PROGRESS);
+        taskDto.setActivationStatus(TaskConstants.ACTIVATION_ACTIVE);
 
         return mapper.reverseMap(taskRepository.createTask(taskDto));
     }

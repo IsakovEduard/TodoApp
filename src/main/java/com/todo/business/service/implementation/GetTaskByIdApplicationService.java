@@ -1,5 +1,6 @@
 package com.todo.business.service.implementation;
 
+import com.todo.business.constant.TaskConstants;
 import com.todo.business.model.interfaces.ITaskDTO;
 import com.todo.business.service.interfaces.IGetTaskByIdApplicationService;
 import com.todo.repository.entity.Task;
@@ -26,15 +27,15 @@ public class GetTaskByIdApplicationService implements IGetTaskByIdApplicationSer
     @Override
     @Transactional(readOnly = true)
     @Cacheable(
-            cacheNames = "tasks",
+            cacheNames = TaskConstants.CACHE_TASKS,
             key = "#id.toString()",
             condition = "#id != '3'",
             unless = "#result == null")
     public ITaskDTO execute(String id) {
-        logger.info("Executing {}", this.getClass().getSimpleName());
+        logger.info("Loading task id={}", id);
         Task task = jpaRepository.findById(Long.valueOf(id))
                 .orElseThrow(() -> new RuntimeException("Task not found"));
-        if ("DE".equals(task.getActivationStatus())) {
+        if (TaskConstants.ACTIVATION_DELETED.equals(task.getActivationStatus())) {
             throw new RuntimeException("Task is deleted!");
         }
         return mapper.reverseMap(task);

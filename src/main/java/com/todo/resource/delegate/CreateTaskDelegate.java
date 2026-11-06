@@ -23,12 +23,10 @@ public class CreateTaskDelegate {
         this.createTaskApplicationService = createTaskApplicationService;
     }
 
-    public ITaskDTO addTask( V1CreateTaskInput v1CreateTaskInput) {
-        logger.info("Executing AddTaskDelegate: {}", v1CreateTaskInput);
-        validateInput(v1CreateTaskInput);
-        ITaskDTO result = createTaskApplicationService.execute(mapInput(v1CreateTaskInput));
-
-        logger.info("DTO Created: {}", result);
+    public ITaskDTO addTask(V1CreateTaskInput input) {
+        validateInput(input);
+        ITaskDTO result = createTaskApplicationService.execute(mapInput(input));
+        logger.info("Task created: id={}", result.getId());
         return result;
     }
 
@@ -55,7 +53,6 @@ public class CreateTaskDelegate {
         task.setDescription(input.getDescription());
         task.setUrgency(input.getUrgency().getValue());
         task.setDueDate(input.getDueDate());
-
         return task;
     }
 }

@@ -18,12 +18,12 @@ public class DeleteTasksByIdsDelegate {
         this.deleteTasksByIdsApplicationService = deleteTasksByIdsApplicationService;
     }
 
-    public int delete(V1DeleteTaskInput v1DeleteTaskInput) {
-        logger.info("In logger with input v1DeleteTaskInput: {}", v1DeleteTaskInput);
+    public int delete(V1DeleteTaskInput input) {
+        logger.info("Deleting tasks: taskIds={}", input.getTaskIds());
 
-        if (CollectionUtils.isEmpty(v1DeleteTaskInput.getTaskIds())) {
+        if (CollectionUtils.isEmpty(input.getTaskIds())) {
             throw new IllegalArgumentException("Input is empty");
         }
-        return deleteTasksByIdsApplicationService.execute(v1DeleteTaskInput.getTaskIds());
+        return deleteTasksByIdsApplicationService.execute(input.getTaskIds());
     }
 }

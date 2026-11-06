@@ -17,6 +17,8 @@ import java.io.IOException;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
+    private static final String BEARER_PREFIX = "Bearer ";
+
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
@@ -32,38 +34,26 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String header = request.getHeader("Authorization");
-        String token = null;
         String username = null;
 
-        //  Extract Bearer token
-        if (header != null && header.startsWith("Bearer ")) {
-            token = header.substring(7);
+        if (header != null && header.startsWith(BEARER_PREFIX)) {
+            String token = header.substring(BEARER_PREFIX.length());
+            if (jwtUtil.validateToken(token)) {
+                username = jwtUtil.extractUsername(token);
+            }
         }
 
-        // Validate token & extract username
-        if (token != null && jwtUtil.validateToken(token)) {
-            username = jwtUtil.extractUsername(token);
-        }
-
-        // If token is valid and user is not already authenticated
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-            // Load the user from database
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-            //  Create authentication object
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
                             userDetails.getAuthorities()
                     );
-
-            // Save authentication in the security context
             SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 
-        // Continue filter chain
         filterChain.doFilter(request, response);
     }
 }

@@ -9,11 +9,6 @@ paths:
         Get tasks by filter. If no filter passed retrieves all tasks
       operationId: getTasksByFilter
       parameters:
-#        - name: userId
-#          in: path
-#          required: true
-#          schema:
-#            type: string
         - name: taskId
           in: query
           required: false
@@ -42,12 +37,6 @@ paths:
     post:
       summary: Create a new task
       operationId: createTask
-#      parameters:
-#        - name: userId
-#          in: path
-#          required: true
-#          schema:
-#            type: string
       requestBody:
         required: true
         content:
@@ -64,12 +53,6 @@ paths:
                 example: "Task created successfully"
     delete:
       operationId: deleteTask
-#      parameters:
-#        - name: userId
-#          in: path
-#          required: true
-#          schema:
-#            type: string
       requestBody:
         required: true
         content:
@@ -86,12 +69,6 @@ paths:
                 description: number of deleted instances
     put:
       operationId: updateTaskCharacteristics
-#      parameters:
-#        - name: userId
-#          in: path
-#          required: true
-#          schema:
-#            type: string
       requestBody:
         required: true
         content:
@@ -169,9 +146,6 @@ components:
           type: string
           format: date-time
           example: "2025-09-06T22:30:00"
-#          format: date
-#          description: Due date of the task (yyyy-MM-dd)
-#          example: "2025-09-10"
     V1DeleteTaskInput:
       type: object
       properties:

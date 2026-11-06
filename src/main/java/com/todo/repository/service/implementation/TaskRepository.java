@@ -1,5 +1,6 @@
 package com.todo.repository.service.implementation;
 
+import com.todo.business.constant.TaskConstants;
 import com.todo.business.model.interfaces.ITaskDTO;
 import com.todo.repository.entity.Task;
 import com.todo.repository.mapper.interfaces.IMapTaskToTaskDTO;
@@ -37,15 +38,17 @@ public class TaskRepository implements ITaskRepository {
 
     @Override
     public Task getTaskByUserIdAndTaskId(Long userId, Long taskId) {
-        Task task = jpaRepository.findByUserIdAndId(Long.valueOf(userId), taskId)
+        Task task = jpaRepository.findByUserIdAndId(userId, taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
-        if ("DE".equals(task.getActivationStatus())) {
+        if (TaskConstants.ACTIVATION_DELETED.equals(task.getActivationStatus())) {
             throw new RuntimeException("Cannot modify deleted task!");
         }
         return task;
     }
 
     private List<Task> filterOutDeleted(List<Task> userTasks) {
-        return userTasks.stream().filter(taskDTO -> !"DE".equals(taskDTO.getActivationStatus())).toList();
+        return userTasks.stream()
+                .filter(task -> !TaskConstants.ACTIVATION_DELETED.equals(task.getActivationStatus()))
+                .toList();
     }
 }

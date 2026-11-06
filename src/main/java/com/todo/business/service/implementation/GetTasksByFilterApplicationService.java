@@ -4,7 +4,7 @@ import com.todo.business.domain.interfaces.ITaskFilterDomainService;
 import com.todo.business.model.implementation.Filter;
 import com.todo.business.model.interfaces.ITaskDTO;
 import com.todo.business.service.interfaces.IGetTasksByFilterApplicationService;
-import com.todo.business.service.interfaces.IGetUserServiceFromContextService;
+import com.todo.business.service.interfaces.IGetUserFromContextService;
 import com.todo.repository.entity.Task;
 import com.todo.repository.entity.User;
 import com.todo.repository.mapper.interfaces.IMapTaskToTaskDTO;
@@ -19,23 +19,23 @@ import java.util.List;
 public class GetTasksByFilterApplicationService implements IGetTasksByFilterApplicationService {
 
     private final ITaskRepository taskRepository;
-    private final IGetUserServiceFromContextService getUserServiceFromContextService;
+    private final IGetUserFromContextService getUserFromContextService;
     private final IMapTaskToTaskDTO mapper;
     private final ITaskFilterDomainService taskFilterDomainService;
 
     public GetTasksByFilterApplicationService(ITaskRepository taskRepository,
-                                              IGetUserServiceFromContextService getUserServiceFromContextService,
+                                              IGetUserFromContextService getUserFromContextService,
                                               IMapTaskToTaskDTO mapper,
                                               ITaskFilterDomainService taskFilterDomainService) {
         this.taskRepository = taskRepository;
-        this.getUserServiceFromContextService = getUserServiceFromContextService;
+        this.getUserFromContextService = getUserFromContextService;
         this.mapper = mapper;
         this.taskFilterDomainService = taskFilterDomainService;
     }
 
     @Override
     public List<ITaskDTO> execute(Filter filter) {
-        User user = getUserServiceFromContextService.getUserFromContext();
+        User user = getUserFromContextService.getUserFromContext();
         List<Task> taskEntities = taskRepository.getTasksByUser(user.getId(), false);
         if (!CollectionUtils.isEmpty(taskEntities) && filter != null) {
             taskEntities = taskFilterDomainService.applyFilter(taskEntities, filter);

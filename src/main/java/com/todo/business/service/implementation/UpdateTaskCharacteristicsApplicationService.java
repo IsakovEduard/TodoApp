@@ -1,9 +1,10 @@
 package com.todo.business.service.implementation;
 
+import com.todo.business.constant.TaskConstants;
 import com.todo.business.model.implementation.Characteristic;
 import com.todo.business.model.implementation.PatchElement;
 import com.todo.business.model.interfaces.ITaskDTO;
-import com.todo.business.service.interfaces.IGetUserServiceFromContextService;
+import com.todo.business.service.interfaces.IGetUserFromContextService;
 import com.todo.business.service.interfaces.IUpdateTaskCharacteristicsApplicationService;
 import com.todo.repository.entity.Task;
 import com.todo.repository.entity.User;
@@ -26,52 +27,46 @@ public class UpdateTaskCharacteristicsApplicationService implements IUpdateTaskC
     private final ITaskRepository taskRepository;
     private final ITaskJpaRepository taskJpaRepository;
     private final IMapTaskToTaskDTO mapTaskToTaskDTO;
-    private final IGetUserServiceFromContextService getUserServiceFromContextService;
+    private final IGetUserFromContextService getUserFromContextService;
 
     public UpdateTaskCharacteristicsApplicationService(ITaskRepository taskRepository,
                                                        ITaskJpaRepository taskJpaRepository,
                                                        IMapTaskToTaskDTO mapTaskToTaskDTO,
-                                                       IGetUserServiceFromContextService getUserServiceFromContextService) {
+                                                       IGetUserFromContextService getUserFromContextService) {
         this.taskRepository = taskRepository;
         this.taskJpaRepository = taskJpaRepository;
         this.mapTaskToTaskDTO = mapTaskToTaskDTO;
-        this.getUserServiceFromContextService = getUserServiceFromContextService;
+        this.getUserFromContextService = getUserFromContextService;
     }
 
     @Override
     @CachePut(
-            cacheNames = "tasks",
-            key = "#patchElement.taskId",
+            cacheNames = TaskConstants.CACHE_TASKS,
+            key = "#patchElement.taskId()",
             unless = "#result == null"
     )
     public ITaskDTO execute(PatchElement patchElement) {
-        logger.info("Executing UpdateTaskCharacteristicsApplicationService with input: {}", patchElement);
+        logger.info("Updating task id={}", patchElement.taskId());
 
-        // Step 1: Retrieve relevant tasks
-        User user = getUserServiceFromContextService.getUserFromContext();
-        Task task = taskRepository.getTaskByUserIdAndTaskId(user.getId(), Long.valueOf(patchElement.getTaskId()));
-        // Step 2: update task Entity
-        updateTask(patchElement.getChangeCharacteristics(), task);
+        User user = getUserFromContextService.getUserFromContext();
+        Task task = taskRepository.getTaskByUserIdAndTaskId(user.getId(), Long.valueOf(patchElement.taskId()));
+        updateTask(patchElement.changeCharacteristics(), task);
 
-        // Step 3: save task Entity
-        Task save = taskJpaRepository.save(task);
-
-        return mapTaskToTaskDTO.reverseMap(save);
+        return mapTaskToTaskDTO.reverseMap(taskJpaRepository.save(task));
     }
-
 
     private void updateTask(List<Characteristic> changeCharacteristics, Task task) {
         changeCharacteristics.forEach(characteristic -> {
-            String charName = characteristic.getName().toUpperCase();
-            String newCharValue = characteristic.getValue();
-            switch (charName) {
-                case "TITLE" -> task.setTitle(newCharValue);
-                case "DESCRIPTION" -> task.setDescription(newCharValue);
-                case "DUE_DATE" -> task.setDueDate(LocalDateTime.parse(newCharValue));
-                case "CREATED_AT" -> task.setCreatedAt(LocalDateTime.parse(newCharValue));
-                case "URGENCY" -> task.setUrgency(newCharValue);
-                case "STATUS" -> task.setStatus(newCharValue);
-                default -> throw new IllegalArgumentException(charName + " is not valid value for update!");
+            String characteristicName = characteristic.name().toUpperCase();
+            String newValue = characteristic.value();
+            switch (characteristicName) {
+                case "TITLE" -> task.setTitle(newValue);
+                case "DESCRIPTION" -> task.setDescription(newValue);
+                case "DUE_DATE" -> task.setDueDate(LocalDateTime.parse(newValue));
+                case "CREATED_AT" -> task.setCreatedAt(LocalDateTime.parse(newValue));
+                case "URGENCY" -> task.setUrgency(newValue);
+                case "STATUS" -> task.setStatus(newValue);
+                default -> throw new IllegalArgumentException(characteristicName + " is not valid value for update!");
             }
         });
     }

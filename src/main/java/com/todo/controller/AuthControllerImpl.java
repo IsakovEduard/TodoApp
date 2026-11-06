@@ -1,9 +1,9 @@
 package com.todo.controller;
 
 import com.todo.repository.entity.User;
-import com.todo.security.DTO.JwtResponse;
-import com.todo.security.DTO.LoginRequest;
-import com.todo.security.DTO.RegisterRequest;
+import com.todo.security.dto.JwtResponse;
+import com.todo.security.dto.LoginRequest;
+import com.todo.security.dto.RegisterRequest;
 import com.todo.repository.service.interfaces.IUserJpaRepository;
 import com.todo.security.jwt.JwtUtil;
 import org.springframework.http.ResponseEntity;

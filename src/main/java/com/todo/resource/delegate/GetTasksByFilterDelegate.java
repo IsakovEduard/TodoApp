@@ -27,28 +27,12 @@ public class GetTasksByFilterDelegate {
     }
 
     public List<V1Task> execute(String taskId, String status, String urgency) {
+        logger.info("Getting tasks: taskId={}, status={}, urgency={}", taskId, status, urgency);
+        boolean isFilterEmpty = StringUtils.isEmpty(taskId) && StringUtils.isEmpty(status) && StringUtils.isEmpty(urgency);
+        Filter filter = isFilterEmpty ? null : new Filter(taskId, status, urgency);
 
-        logger.info("In GetTasksByFilterDelegate with input: filter values: taskId={},status={},urgency={}", taskId, status, urgency);
-        Filter filter = null;
-        boolean isInputFilterEmpty = StringUtils.isEmpty(taskId) && StringUtils.isEmpty(status) && StringUtils.isEmpty(urgency);
-        logger.info("isInputFilterEmpty: {}", isInputFilterEmpty);
-        if (!isInputFilterEmpty) {
-            filter = mapFilter(taskId, status, urgency);
-        }
         List<ITaskDTO> tasks = getTasksByFilterApplicationService.execute(filter);
-        logger.info("tasks result before output mapper: {}", tasks);
-        List<V1Task> result = outputMapper.map(tasks);
-        logger.info("tasks result after output mapper: {}", result);
-        return result;
+        logger.info("Found {} tasks", tasks.size());
+        return outputMapper.map(tasks);
     }
-
-    private Filter mapFilter(String taskId, String status, String urgency) {
-
-        Filter filter = new Filter();
-        filter.setTaskId(taskId);
-        filter.setStatus(status);
-        filter.setUrgency(urgency);
-        return filter;
-    }
-
 }

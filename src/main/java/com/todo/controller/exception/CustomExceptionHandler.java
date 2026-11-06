@@ -1,8 +1,8 @@
 package com.todo.controller.exception;
 
-import com.todo.controller.exception.customExceptions.ForbiddenException;
-import com.todo.controller.exception.customExceptions.ResourceNotFoundException;
-import com.todo.controller.exception.customExceptions.UnauthorizedException;
+import com.todo.controller.exception.custom.ForbiddenException;
+import com.todo.controller.exception.custom.ResourceNotFoundException;
+import com.todo.controller.exception.custom.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
