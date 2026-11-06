@@ -1,6 +1,5 @@
 package com.todo.controller.exception;
 
-import com.todo.exception.ForbiddenException;
 import com.todo.exception.ResourceNotFoundException;
 import com.todo.exception.UnauthorizedException;
 import org.springframework.http.HttpStatus;
@@ -52,12 +51,6 @@ public class CustomExceptionHandler {
     public ResponseEntity<?> handleUnauthorized(UnauthorizedException ex, WebRequest request) {
         return new ResponseEntity<>(buildBody(ex, request, HttpStatus.UNAUTHORIZED),
                 HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<?> handleForbidden(ForbiddenException ex, WebRequest request) {
-        return new ResponseEntity<>(buildBody(ex, request, HttpStatus.FORBIDDEN),
-                HttpStatus.FORBIDDEN);
     }
 
     // ---- VALIDATION EXCEPTIONS ---- //

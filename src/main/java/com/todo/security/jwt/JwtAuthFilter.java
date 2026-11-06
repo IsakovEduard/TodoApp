@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -44,6 +45,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            authenticate(username);
+        }
+
+        filterChain.doFilter(request, response);
+    }
+
+    private void authenticate(String username) {
+        try {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(
@@ -52,8 +61,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                             userDetails.getAuthorities()
                     );
             SecurityContextHolder.getContext().setAuthentication(authToken);
+        } catch (UsernameNotFoundException e) {
+            logger.debug("Ignoring token for a user that no longer exists");
         }
-
-        filterChain.doFilter(request, response);
     }
 }

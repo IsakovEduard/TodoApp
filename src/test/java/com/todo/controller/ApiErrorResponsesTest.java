@@ -1,6 +1,7 @@
 package com.todo.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.todo.security.jwt.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,6 +28,8 @@ class ApiErrorResponsesTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Test
     void login_ShouldReturn401_WhenPasswordIsWrong() throws Exception {
@@ -84,6 +87,14 @@ class ApiErrorResponsesTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"taskId\":\"" + taskId + "\",\"characteristics\":[{\"name\":\"title\",\"value\":\"x\"}]}"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void request_ShouldBeRejectedWith403_WhenTokenUserNoLongerExists() throws Exception {
+        String tokenOfUnknownUser = jwtUtil.generateToken("ghost-" + UUID.randomUUID());
+
+        mockMvc.perform(get("/task-management").header("Authorization", bearer(tokenOfUnknownUser)))
+                .andExpect(status().isForbidden());
     }
 
     private String registerUser() throws Exception {
