@@ -30,7 +30,7 @@ Read `instructions/CODING_STANDARDS.md` **before** writing, modifying, refactori
 
 ## Conventions and gotchas
 
-- **Contract-first:** `controller/api/interfaces` and `controller/api/model` are generated from the YAML by `openapi-generator-maven-plugin` at build time. Change the YAML, not generated code. The custom template `src/main/resources/openapi-templates/model.mustache` is not wired into the build (`templateDirectory` is not set).
+- **Contract-first:** `controller/api/interfaces` and `controller/api/model` are generated from the YAML by `openapi-generator-maven-plugin` at build time. Change the YAML, not generated code.
 - **Dependency injection:** use Spring stereotypes with constructor injection and `private final` fields (no field injection, no `@Inject`/`@Autowired`). `@Service` for application/domain services, `@Component` for delegates and mappers, `@Repository` for repository implementations. Beans are found by component scan; there is no `spring.factories`. Keep `@Configuration` classes only for third-party beans (`CacheConfig`, `PasswordConfig`, `SecurityConfig`).
 - **Data objects are not beans:** create DTOs, `Filter`, `PatchElement`, `Characteristic` and entities with `new`.
 - **One application service per use case**, with an `I`-prefixed interface (e.g. `IGetTaskByIdApplicationService`).
