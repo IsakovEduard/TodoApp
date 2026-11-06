@@ -2,18 +2,74 @@ openapi: 3.0.1
 info:
   title: Task API
   version: 1.0.0
+security:
+  - bearerAuth: []
 paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      operationId: register
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1Credentials'
+      responses:
+        '200':
+          description: User registered
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "User registered"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /auth/login:
+    post:
+      summary: Log in and receive a JWT
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/V1Credentials'
+      responses:
+        '200':
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1AuthToken'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/me:
+    get:
+      summary: Get the currently authenticated user
+      operationId: me
+      responses:
+        '200':
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1CurrentUser'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
   /task-management:
     get:
       description:
         Get tasks by filter. If no filter passed retrieves all tasks
       operationId: getTasksByFilter
       parameters:
-#        - name: userId
-#          in: path
-#          required: true
-#          schema:
-#            type: string
         - name: taskId
           in: query
           required: false
@@ -29,7 +85,6 @@ paths:
           required: false
           schema:
             type: string
-
       responses:
         '200':
           description: List of tasks
@@ -39,15 +94,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/V1Task'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
     post:
       summary: Create a new task
       operationId: createTask
-#      parameters:
-#        - name: userId
-#          in: path
-#          required: true
-#          schema:
-#            type: string
       requestBody:
         required: true
         content:
@@ -56,20 +107,18 @@ paths:
               $ref: '#/components/schemas/V1CreateTaskInput'
       responses:
         '201':
-          description: Created
+          description: Created, returns the new task id
           content:
             text/plain:
               schema:
                 type: string
-                example: "Task created successfully"
+                example: "42"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
     delete:
       operationId: deleteTask
-#      parameters:
-#        - name: userId
-#          in: path
-#          required: true
-#          schema:
-#            type: string
       requestBody:
         required: true
         content:
@@ -84,14 +133,12 @@ paths:
               schema:
                 type: integer
                 description: number of deleted instances
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
     put:
       operationId: updateTaskCharacteristics
-#      parameters:
-#        - name: userId
-#          in: path
-#          required: true
-#          schema:
-#            type: string
       requestBody:
         required: true
         content:
@@ -100,13 +147,19 @@ paths:
               $ref: '#/components/schemas/V1UpdateCharacteristicsInput'
       responses:
         '200':
-           description: Tasks after update characteristics
-           content:
+          description: Tasks after update characteristics
+          content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/V1Task'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   /task-management/{taskId}:
     get:
@@ -121,14 +174,87 @@ paths:
             type: string
       responses:
         '200':
-          description: List of tasks
+          description: The task
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/V1Task'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    BadRequest:
+      description: Invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/V1Error'
+    Unauthorized:
+      description: Missing, invalid or expired token, or invalid credentials
+    NotFound:
+      description: Task does not exist, is deleted, or belongs to another user
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/V1Error'
+
   schemas:
+    V1Credentials:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          pattern: '.*\S.*'
+        password:
+          type: string
+          pattern: '.*\S.*'
+
+    V1AuthToken:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+
+    V1CurrentUser:
+      type: object
+      required:
+        - username
+      properties:
+        username:
+          type: string
+
+    V1Error:
+      type: object
+      properties:
+        timestamp:
+          type: string
+        status:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
+        fieldErrors:
+          type: object
+          additionalProperties:
+            type: string
+
     V1Task:
       type: object
       properties:
@@ -142,7 +268,7 @@ components:
         description:
           type: string
         urgency:
-            $ref: '#/components/schemas/V1Urgency'
+          $ref: '#/components/schemas/V1Urgency'
         dueDate:
           type: string
           format: date-time
@@ -152,9 +278,9 @@ components:
           format: date-time
           example: "2025-09-06T22:30:00"
         status:
-            $ref: '#/components/schemas/V1Status'
+          $ref: '#/components/schemas/V1Status'
         activationStatus:
-            $ref: '#/components/schemas/V1ActivationStatus'
+          $ref: '#/components/schemas/V1ActivationStatus'
 
     V1CreateTaskInput:
       type: object
@@ -169,9 +295,7 @@ components:
           type: string
           format: date-time
           example: "2025-09-06T22:30:00"
-#          format: date
-#          description: Due date of the task (yyyy-MM-dd)
-#          example: "2025-09-10"
+
     V1DeleteTaskInput:
       type: object
       properties:
@@ -194,11 +318,16 @@ components:
 
     V1Characteristic:
       type: object
+      description: One field change. Unknown names, and values outside the allowed set, are rejected with 400.
       properties:
         name:
           type: string
+          description: One of TITLE, DESCRIPTION, DUE_DATE, CREATED_AT, URGENCY, STATUS (case-insensitive).
         value:
           type: string
+          description: >-
+            New value. DUE_DATE takes an ISO local date-time such as 2026-12-01T09:30, and an empty
+            value clears it. URGENCY and STATUS must be one of their enum values.
 
     V1Urgency:
       type: string
@@ -206,13 +335,15 @@ components:
         - LOW
         - NORMAL
         - HIGH
+
     V1Status:
-        type: string
-        enum:
-          - IN_PROGRESS
-          - COMPLETED
-          - CANCELLED
-          - SCHEDULED
+      type: string
+      enum:
+        - IN_PROGRESS
+        - COMPLETED
+        - CANCELLED
+        - SCHEDULED
+
     V1ActivationStatus:
       type: string
       enum:
@@ -228,4 +359,3 @@ components:
           $ref: '#/components/schemas/V1Status'
         urgency:
           $ref: '#/components/schemas/V1Urgency'
-

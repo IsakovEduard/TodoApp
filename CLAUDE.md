@@ -1,0 +1,50 @@
+# CLAUDE.md
+
+@README.md
+
+## Coding standards (load on demand)
+
+Read `instructions/CODING_STANDARDS.md` **before** writing, modifying, refactoring or reviewing Java or frontend (TypeScript/React) code or tests, and apply it. Do not read it for tasks that don't touch code quality: answering questions, explaining code, git operations, documentation-only edits, or running builds and tests.
+
+## Workflow rules
+
+- **Present choices as a selectable prompt:** whenever the user must pick between a few options (approaches, scope, commit approval, which item to do next), ask with `AskUserQuestion` so the choices are visible and selectable. Do not bury options in prose or end with an open "which do you prefer?". Put the recommended option first, marked "(Recommended)", and keep a free-text answer available through the built-in "Other" choice. Plain text questions are fine only for open-ended input that has no fixed options.
+- **Quick code review after tests pass:** once the build and tests pass, review the diff before proposing a commit. Check three things: (1) the change matches the task and every stated requirement is fulfilled, with nothing missing and nothing extra; (2) no dead code is left (unused classes, methods, fields, imports, config, files or tests made obsolete by the change); (3) the code follows `instructions/CODING_STANDARDS.md`. Report findings with an explicit severity so the difference is clear:
+  - **Potential bug / unexpected behavior:** the change may behave incorrectly or differently from what was intended (state the scenario and what goes wrong). Fix it, or flag it and let the user decide, before committing.
+  - **Minor issue:** style, naming, small cleanup or a standards deviation with no behavior impact.
+  - Report only findings that need attention. Do not list checks that passed (no "Dead code: none"); if nothing is found, say nothing about the review beyond a brief "Review: no issues". Do not hide or soften a potential bug among minor items.
+- **Approval before commit:** approval to make a change is not approval to commit it. When work is ready, run the build and tests, do the quick review, summarize the changes (files and intent, `git diff --stat`, review findings) and propose the commit message. Then ask the user with `AskUserQuestion`, offering:
+  1. **Approve this commit** – commit now; ask again for the next commit.
+  2. **Auto-approve commits for this session** – commit without asking again until the session ends. Still run the build and tests first, and report what was committed afterwards.
+  3. **Let me review first** – do not commit; wait for the user.
+- Auto-approval lasts only for the current session and is never assumed in a new one. It covers committing only, never pushing, amending, resetting or branch changes. If tests fail, do not commit even under auto-approval; report instead.
+
+## Structure (`src/main/java/com/todo`)
+
+- `controller/` – REST controllers (`TaskControllerImpl`, `AuthControllerImpl`), `exception/` handler, `api/task_management.yaml` (OpenAPI spec, source of truth for the whole API: auth and tasks, including error shapes)
+- `exception/` (`com.todo.exception`) – custom exceptions usable from any layer; `CustomExceptionHandler` maps them: `ResourceNotFoundException` → 404 (missing, deleted or not-owned tasks), `UnauthorizedException` → 401 (invalid credentials), `IllegalArgumentException` and unreadable request bodies → 400, unknown paths (`NoResourceFoundException`) → 404, other `RuntimeException` → 500. A missing, invalid or expired token is rejected by the security entry point with 401
+- `business/` – `service/` (application services, one per use case), `domain/`, `model/` (DTOs), `config/` (cache)
+- `resource/` – `delegate/` (input validation and request/response mapping between controller and services), `mapper/`
+- `repository/` – JPA `entity/`, `mapper/`, `service/` (repositories)
+- `security/` – JWT filter/util/properties, security config, user details service
+- `frontend/` (outside `src/`) – React + TypeScript + Vite + Redux Toolkit app. `src/api/generated.ts` is generated from the OpenAPI spec (`npm run api:generate`, do not edit); `src/api/baseApi.ts` adds the bearer token and logs out on a 401; `src/features/<name>/` holds slices, pages and their tests; `src/app/` is the store; the color theme uses CSS variables in `src/index.css` (light and dark palettes, toggled by a `dark` class on `<html>`), never hard-coded colors in components. Vite builds into `target/classes/static`
+- `ui/` – web UI hosting: `UiRoutes` (public paths, shared with `SecurityConfig`) and `SpaForwardingController`, which forwards client-side routes (`/login`, `/register`, `/tasks/**`) to `index.html`. The frontend build is served from `static/`. A new client route must be added to `UiRoutes` (both the constant and `PUBLIC_PATHS`)
+
+## Conventions and gotchas
+
+- **Contract-first:** `controller/api/interfaces` and `controller/api/model` are generated from the YAML by `openapi-generator-maven-plugin` at build time. Change the YAML, not generated code.
+- **Dependency injection:** use Spring stereotypes with constructor injection and `private final` fields (no field injection, no `@Inject`/`@Autowired`). `@Service` for application/domain services, `@Component` for delegates and mappers, `@Repository` for repository implementations. Beans are found by component scan; there is no `spring.factories`. Keep `@Configuration` classes only for third-party beans (`CacheConfig`, `PasswordConfig`, `SecurityConfig`).
+- **Data objects are not beans:** create DTOs, `Filter`, `PatchElement`, `Characteristic` and entities with `new`.
+- **One application service per use case**, with an `I`-prefixed interface (e.g. `IGetTaskByIdApplicationService`).
+- **User scoping:** resolve the current user via `IGetUserFromContextService`; task queries must filter by user id.
+- **Cache:** Caffeine cache `tasks` (`CacheConfig`), keyed per user and task id via `TaskCacheKeys` (`@Cacheable` on get, `@CachePut` on update, explicit eviction on delete). Always build keys with `TaskCacheKeys` so users never share entries, and keep all read/write paths consistent.
+- **Task updates:** `UpdateTaskCharacteristicsApplicationService` accepts only TITLE, DESCRIPTION, DUE_DATE, CREATED_AT, URGENCY, STATUS; anything else throws `IllegalArgumentException`. URGENCY and STATUS values are checked against `TaskConstants.URGENCY_VALUES` / `STATUS_VALUES` (kept in sync with the OpenAPI enums by `TaskConstantsTest`), date values must be ISO local date-times, and an empty DUE_DATE clears the due date. A description is optional on create.
+- **Config:** `application.properties` points H2 at `/app/data/todo-db` (Docker path). Local runs use `--spring.profiles.active=dev` (own H2 file `./data/todo-dev` and a dev-only JWT secret); tests that start the context should override `spring.datasource.url` with an in-memory database.
+
+## Commands
+
+- Build/test: `./mvnw clean verify` (also installs Node via `frontend-maven-plugin`, builds the UI and runs the frontend tests; add `-DskipFrontend` for backend-only work)
+- Frontend only: `cd frontend && npm test`, `npm run build`, `npm run lint`, `npm run dev`. After changing `task_management.yaml`, run `npm run api:generate` and commit the result. The Maven Node version (`frontend.node.version` in `pom.xml`) must satisfy the `engines` field in `frontend/package.json`
+- Run: `scripts\start-dev.cmd` (Windows; options `-Port`, `-SkipFrontend`, `-NoBrowser`), `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev` or `docker compose up --build`. In PowerShell quote `-D` arguments that contain a dot: `.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev"`
+- Manual API requests: `src/main/resources/test.http`
+- `out/` is IDE build output; don't commit it.

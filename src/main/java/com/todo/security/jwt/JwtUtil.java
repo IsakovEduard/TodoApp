@@ -11,18 +11,14 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    //  Secret key (≥32 chars)
-    private final String secret = "ISAKOV_EDU_PROJECT$ecureJWT@ISR!KOR";
+    private final Key key;
+    private final long expirationMillis;
 
-    //  Key object generated from secret
-    private final Key key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    public JwtUtil(JwtProperties properties) {
+        this.key = Keys.hmacShaKeyFor(properties.secret().getBytes(StandardCharsets.UTF_8));
+        this.expirationMillis = properties.expiration().toMillis();
+    }
 
-    //  Token expiration: 1 hour
-    private final long expirationMillis = 1000 * 60 * 60; // 1 hour
-
-    // -------------------------
-    // Generate JWT token
-    // -------------------------
     public String generateToken(String username) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMillis);
@@ -35,9 +31,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    // -------------------------
-    // Extract username from token
-    // -------------------------
     public String extractUsername(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -47,9 +40,6 @@ public class JwtUtil {
                 .getSubject();
     }
 
-    // -------------------------
-    // Validate token
-    // -------------------------
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
@@ -58,7 +48,6 @@ public class JwtUtil {
                     .parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            // log or handle invalid token
             return false;
         }
     }

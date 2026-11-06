@@ -1,0 +1,8 @@
+target
+out
+data
+.git
+.idea
+frontend/node_modules
+frontend/node
+.env

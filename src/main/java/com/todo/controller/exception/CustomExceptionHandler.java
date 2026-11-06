@@ -1,14 +1,15 @@
 package com.todo.controller.exception;
 
-import com.todo.controller.exception.customExceptions.ForbiddenException;
-import com.todo.controller.exception.customExceptions.ResourceNotFoundException;
-import com.todo.controller.exception.customExceptions.UnauthorizedException;
+import com.todo.exception.ResourceNotFoundException;
+import com.todo.exception.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -19,11 +20,15 @@ public class CustomExceptionHandler {
 
     // Template method for building consistent error response
     private Map<String, Object> buildBody(Exception ex, WebRequest request, HttpStatus status) {
+        return buildBody(ex.getMessage(), request, status);
+    }
+
+    private Map<String, Object> buildBody(String message, WebRequest request, HttpStatus status) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", new Date());
         body.put("status", status.value());
         body.put("error", status.getReasonPhrase());
-        body.put("message", ex.getMessage());
+        body.put("message", message);
         body.put("path", request.getDescription(false).replace("uri=", ""));
         return body;
     }
@@ -42,6 +47,18 @@ public class CustomExceptionHandler {
                 HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> handleUnreadableBody(HttpMessageNotReadableException ex, WebRequest request) {
+        return new ResponseEntity<>(buildBody("Malformed or invalid request body", request, HttpStatus.BAD_REQUEST),
+                HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<?> handleNoResource(NoResourceFoundException ex, WebRequest request) {
+        return new ResponseEntity<>(buildBody("Resource not found", request, HttpStatus.NOT_FOUND),
+                HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleNotFound(ResourceNotFoundException ex, WebRequest request) {
         return new ResponseEntity<>(buildBody(ex, request, HttpStatus.NOT_FOUND),
@@ -52,12 +69,6 @@ public class CustomExceptionHandler {
     public ResponseEntity<?> handleUnauthorized(UnauthorizedException ex, WebRequest request) {
         return new ResponseEntity<>(buildBody(ex, request, HttpStatus.UNAUTHORIZED),
                 HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<?> handleForbidden(ForbiddenException ex, WebRequest request) {
-        return new ResponseEntity<>(buildBody(ex, request, HttpStatus.FORBIDDEN),
-                HttpStatus.FORBIDDEN);
     }
 
     // ---- VALIDATION EXCEPTIONS ---- //

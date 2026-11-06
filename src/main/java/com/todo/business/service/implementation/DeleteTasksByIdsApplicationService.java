@@ -1,37 +1,43 @@
 package com.todo.business.service.implementation;
 
+import com.todo.business.cache.TaskCacheKeys;
+import com.todo.business.constant.TaskConstants;
 import com.todo.business.service.interfaces.IDeleteTasksByIdsApplicationService;
-import com.todo.business.service.interfaces.IGetUserServiceFromContextService;
+import com.todo.business.service.interfaces.IGetUserFromContextService;
 import com.todo.repository.entity.User;
 import com.todo.repository.service.interfaces.ITaskJpaRepository;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.util.List;
 
+@Service
 public class DeleteTasksByIdsApplicationService implements IDeleteTasksByIdsApplicationService {
 
-    @Inject
-    private ITaskJpaRepository taskJpaRepository;
-    @Inject
-    private IGetUserServiceFromContextService getUserServiceFromContextService;
-    @Inject
-    private CacheManager cacheManager;
+    private final ITaskJpaRepository taskJpaRepository;
+    private final IGetUserFromContextService getUserFromContextService;
+    private final CacheManager cacheManager;
+
+    public DeleteTasksByIdsApplicationService(ITaskJpaRepository taskJpaRepository,
+                                              IGetUserFromContextService getUserFromContextService,
+                                              CacheManager cacheManager) {
+        this.taskJpaRepository = taskJpaRepository;
+        this.getUserFromContextService = getUserFromContextService;
+        this.cacheManager = cacheManager;
+    }
 
     @Override
     @Transactional
     public int execute(List<String> taskIds) {
-
-        // 1. Mark tasks as deleted in DB
-        User user = getUserServiceFromContextService.getUserFromContext();
+        User user = getUserFromContextService.getUserFromContext();
         List<Long> ids = taskIds.stream().map(Long::valueOf).toList();
         int deletedTasks = taskJpaRepository.deactivateAndCancelTasks(user.getId(), ids);
-        // 2. Evict only affected cache entries
-        Cache cache = cacheManager.getCache("tasks");
+
+        Cache cache = cacheManager.getCache(TaskConstants.CACHE_TASKS);
         if (cache != null) {
-            taskIds.forEach(cache::evict);
+            taskIds.forEach(taskId -> cache.evict(TaskCacheKeys.of(user.getUsername(), taskId)));
         }
         return deletedTasks;
     }

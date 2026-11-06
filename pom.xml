@@ -29,6 +29,9 @@
 	<properties>
 		<java.version>17</java.version>
         <openapi-generator.version>7.5.0</openapi-generator.version>
+        <frontend.node.version>v24.15.0</frontend.node.version>
+        <skipFrontend>false</skipFrontend>
+        <skipFrontendTests>${skipFrontend}</skipFrontendTests>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -50,12 +53,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>1</version>
-        </dependency>
-
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -116,10 +113,6 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
 
@@ -135,6 +128,58 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.15.1</version>
+                <configuration>
+                    <workingDirectory>${project.basedir}/frontend</workingDirectory>
+                    <installDirectory>${project.basedir}/frontend</installDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install-node-and-npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipFrontend}</skip>
+                            <nodeVersion>${frontend.node.version}</nodeVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm-ci</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipFrontend}</skip>
+                            <arguments>ci</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm-build</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipFrontend}</skip>
+                            <arguments>run build</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipFrontendTests}</skip>
+                            <arguments>test</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
@@ -155,12 +200,6 @@
                             <apiPackage>com.todo.controller.api.interfaces</apiPackage>
                             <modelPackage>com.todo.controller.api.model</modelPackage>
 
-                            <!-- Use your custom template folder for models -->
-<!--                            <templateDirectory>${project.basedir}/src/main/resources/openapi-templates</templateDirectory>-->
-
-                            <!-- Generate only interfaces for APIs -->
-<!--                            <interfaceOnly>true</interfaceOnly>-->
-                            <!-- Optional: skip tests -->
                             <generateApiTests>false</generateApiTests>
                             <generateModelTests>false</generateModelTests>
                             <configOptions>

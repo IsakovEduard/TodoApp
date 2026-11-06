@@ -7,22 +7,28 @@ import com.todo.resource.delegate.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.inject.Inject;
 import java.util.List;
 
 @RestController
 public class TaskControllerImpl implements TaskManagementApi {
 
-    @Inject
-    private CreateTaskDelegate createTaskDelegate;
-    @Inject
-    private GetTasksByFilterDelegate getTasksByFilterDelegate;
-    @Inject
-    private DeleteTasksByIdsDelegate deleteTasksByIdsDelegate;
-    @Inject
-    private UpdateTaskCharacteristicsDelegate updateTaskCharacteristicsDelegate;
-    @Inject
-    private GetTaskByIdDelegate getTaskIdDelegate;
+    private final CreateTaskDelegate createTaskDelegate;
+    private final GetTasksByFilterDelegate getTasksByFilterDelegate;
+    private final DeleteTasksByIdsDelegate deleteTasksByIdsDelegate;
+    private final UpdateTaskCharacteristicsDelegate updateTaskCharacteristicsDelegate;
+    private final GetTaskByIdDelegate getTaskIdDelegate;
+
+    public TaskControllerImpl(CreateTaskDelegate createTaskDelegate,
+                              GetTasksByFilterDelegate getTasksByFilterDelegate,
+                              DeleteTasksByIdsDelegate deleteTasksByIdsDelegate,
+                              UpdateTaskCharacteristicsDelegate updateTaskCharacteristicsDelegate,
+                              GetTaskByIdDelegate getTaskIdDelegate) {
+        this.createTaskDelegate = createTaskDelegate;
+        this.getTasksByFilterDelegate = getTasksByFilterDelegate;
+        this.deleteTasksByIdsDelegate = deleteTasksByIdsDelegate;
+        this.updateTaskCharacteristicsDelegate = updateTaskCharacteristicsDelegate;
+        this.getTaskIdDelegate = getTaskIdDelegate;
+    }
 
     @Override
     public ResponseEntity<String> createTask(V1CreateTaskInput v1CreateTaskInput) {

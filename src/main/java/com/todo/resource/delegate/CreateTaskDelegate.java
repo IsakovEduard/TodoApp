@@ -1,33 +1,30 @@
 package com.todo.resource.delegate;
 
+import com.todo.business.model.implementation.TaskDTO;
 import com.todo.business.model.interfaces.ITaskDTO;
 import com.todo.business.service.interfaces.ICreateTaskApplicationService;
 
 import com.todo.controller.api.model.V1CreateTaskInput;
-import com.todo.controller.api.model.V1Urgency;
-import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
+@Component
 public class CreateTaskDelegate {
 
     private static final Logger logger = LoggerFactory.getLogger(CreateTaskDelegate.class);
 
+    private final ICreateTaskApplicationService createTaskApplicationService;
 
-    @Inject
-    private ICreateTaskApplicationService createTaskApplicationService;
-    @Inject
-    private ObjectProvider<ITaskDTO> taskObjectProvider;
-    public ITaskDTO addTask( V1CreateTaskInput v1CreateTaskInput) {
-        logger.info("Executing AddTaskDelegate: {}", v1CreateTaskInput);
-        validateInput(v1CreateTaskInput);
-        ITaskDTO result = createTaskApplicationService.execute(mapInput(v1CreateTaskInput));
+    public CreateTaskDelegate(ICreateTaskApplicationService createTaskApplicationService) {
+        this.createTaskApplicationService = createTaskApplicationService;
+    }
 
-        logger.info("DTO Created: {}", result);
+    public ITaskDTO addTask(V1CreateTaskInput input) {
+        validateInput(input);
+        ITaskDTO result = createTaskApplicationService.execute(mapInput(input));
+        logger.info("Task created: id={}", result.getId());
         return result;
     }
 
@@ -36,10 +33,7 @@ public class CreateTaskDelegate {
         if (StringUtils.isEmpty(input.getTitle())) {
             errorMessage.append("Title can not be empty. ");
         }
-        if (StringUtils.isEmpty(input.getDescription())) {
-            errorMessage.append("Description can not be empty. ");
-        }
-        if (StringUtils.isEmpty(input.getUrgency().getValue()) || !EnumUtils.isValidEnum(V1Urgency.class, input.getUrgency().getValue())) {
+        if (input.getUrgency() == null) {
             errorMessage.append("Urgency value is null or not valid.");
         }
 
@@ -49,12 +43,11 @@ public class CreateTaskDelegate {
     }
 
     private ITaskDTO mapInput(V1CreateTaskInput input) {
-        ITaskDTO task = taskObjectProvider.getObject();
+        ITaskDTO task = new TaskDTO();
         task.setTitle(input.getTitle());
         task.setDescription(input.getDescription());
         task.setUrgency(input.getUrgency().getValue());
         task.setDueDate(input.getDueDate());
-
         return task;
     }
 }

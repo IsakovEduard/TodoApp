@@ -5,11 +5,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -18,11 +18,15 @@ import java.io.IOException;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private static final String BEARER_PREFIX = "Bearer ";
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+    private final JwtUtil jwtUtil;
+    private final UserDetailsService userDetailsService;
+
+    public JwtAuthFilter(JwtUtil jwtUtil, UserDetailsService userDetailsService) {
+        this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -31,38 +35,34 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String header = request.getHeader("Authorization");
-        String token = null;
         String username = null;
 
-        //  Extract Bearer token
-        if (header != null && header.startsWith("Bearer ")) {
-            token = header.substring(7);
+        if (header != null && header.startsWith(BEARER_PREFIX)) {
+            String token = header.substring(BEARER_PREFIX.length());
+            if (jwtUtil.validateToken(token)) {
+                username = jwtUtil.extractUsername(token);
+            }
         }
 
-        // Validate token & extract username
-        if (token != null && jwtUtil.validateToken(token)) {
-            username = jwtUtil.extractUsername(token);
-        }
-
-        // If token is valid and user is not already authenticated
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            authenticate(username);
+        }
 
-            // Load the user from database
+        filterChain.doFilter(request, response);
+    }
+
+    private void authenticate(String username) {
+        try {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-            //  Create authentication object
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
                             userDetails.getAuthorities()
                     );
-
-            // Save authentication in the security context
             SecurityContextHolder.getContext().setAuthentication(authToken);
+        } catch (UsernameNotFoundException e) {
+            logger.debug("Ignoring token for a user that no longer exists");
         }
-
-        // Continue filter chain
-        filterChain.doFilter(request, response);
     }
 }
