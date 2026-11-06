@@ -48,6 +48,26 @@ class ApiErrorResponsesTest {
     }
 
     @Test
+    void register_ShouldReturn400_WhenUsernameIsBlank() throws Exception {
+        mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON)
+                        .content(credentials("", PASSWORD)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void register_ShouldReturn400_WhenPasswordIsMissing() throws Exception {
+        mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\":\"user-" + UUID.randomUUID() + "\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void login_ShouldReturn400_WhenCredentialsAreMissing() throws Exception {
+        mockMvc.perform(post("/auth/login").contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void getTaskById_ShouldReturn404_WhenTaskDoesNotExist() throws Exception {
         String token = loginAs(registerUser());
 

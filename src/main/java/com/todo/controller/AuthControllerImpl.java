@@ -7,6 +7,7 @@ import com.todo.security.dto.LoginRequest;
 import com.todo.security.dto.RegisterRequest;
 import com.todo.repository.service.interfaces.IUserJpaRepository;
 import com.todo.security.jwt.JwtUtil;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,7 +34,7 @@ public class AuthControllerImpl {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
         if (userRepository.findByUsername(request.username()).isPresent()) {
             return ResponseEntity.badRequest().body("Username already exists");
         }
@@ -45,7 +46,7 @@ public class AuthControllerImpl {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginRequest request) {
         User user = userRepository.findByUsername(request.username())
                 .orElseThrow(() -> new UnauthorizedException(INVALID_CREDENTIALS));
 
