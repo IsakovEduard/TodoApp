@@ -2,6 +2,10 @@
 
 @README.md
 
+## Coding standards (load on demand)
+
+Read `instructions/CODING_STANDARDS.md` **before** writing, modifying, refactoring or reviewing Java code or tests, and apply it. Do not read it for tasks that don't touch code quality: answering questions, explaining code, git operations, documentation-only edits, or running builds and tests.
+
 ## Structure (`src/main/java/com/todo`)
 
 - `controller/` – REST controllers (`TaskControllerImpl`, `AuthControllerImpl`), `exception/` handler, `api/task_management.yaml` (OpenAPI spec, source of truth for the task API)
