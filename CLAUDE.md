@@ -37,7 +37,7 @@ Read `instructions/CODING_STANDARDS.md` **before** writing, modifying, refactori
 - **User scoping:** resolve the current user via `IGetUserFromContextService`; task queries must filter by user id.
 - **Cache:** Caffeine cache `tasks` (`CacheConfig`), keyed per user and task id via `TaskCacheKeys` (`@Cacheable` on get, `@CachePut` on update, explicit eviction on delete). Always build keys with `TaskCacheKeys` so users never share entries, and keep all read/write paths consistent.
 - **Task updates:** `UpdateTaskCharacteristicsApplicationService` accepts only TITLE, DESCRIPTION, DUE_DATE, CREATED_AT, URGENCY, STATUS; anything else throws `IllegalArgumentException`.
-- **Config:** `application.properties` points H2 at `/app/data/todo-db` (Docker path); override `spring.datasource.url` for local runs.
+- **Config:** `application.properties` points H2 at `/app/data/todo-db` (Docker path). Local runs use `--spring.profiles.active=dev` (own H2 file `./data/todo-dev` and a dev-only JWT secret); tests that start the context should override `spring.datasource.url` with an in-memory database.
 
 ## Commands
 

@@ -43,7 +43,7 @@ The JWT signing secret is required and is read from the `JWT_SECRET` environment
 docker compose up --build
 ```
 
-**Local development:** use the `dev` profile, which supplies a fixed, non-secret key. Never use it in production.
+**Local development:** use the `dev` profile, which supplies a fixed, non-secret key and stores data in `./data/todo-dev` (git-ignored). Never use it in production.
 
 ```bash
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
@@ -51,6 +51,6 @@ docker compose up --build
 
 In IntelliJ, set the active profile to `dev` in the run configuration. To use a real secret locally instead, set `JWT_SECRET` (bash: `export JWT_SECRET='...'`, PowerShell: `$env:JWT_SECRET = '...'`).
 
-Note: the default datasource path is `/app/data/todo-db`; override `spring.datasource.url` when running outside Docker.
+Note: without the `dev` profile the datasource path is `/app/data/todo-db` (the Docker location); override `spring.datasource.url` when running outside Docker.
 
 The service listens on `http://localhost:8080`. Obtain a token via `POST /auth/login` and send it as `Authorization: Bearer <token>`. Sample requests are in `src/main/resources/test.http`.
