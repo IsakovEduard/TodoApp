@@ -6,19 +6,25 @@ import com.todo.repository.entity.User;
 import com.todo.repository.service.interfaces.ITaskJpaRepository;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.util.List;
 
+@Service
 public class DeleteTasksByIdsApplicationService implements IDeleteTasksByIdsApplicationService {
 
-    @Inject
-    private ITaskJpaRepository taskJpaRepository;
-    @Inject
-    private IGetUserServiceFromContextService getUserServiceFromContextService;
-    @Inject
-    private CacheManager cacheManager;
+    private final ITaskJpaRepository taskJpaRepository;
+    private final IGetUserServiceFromContextService getUserServiceFromContextService;
+    private final CacheManager cacheManager;
+
+    public DeleteTasksByIdsApplicationService(ITaskJpaRepository taskJpaRepository,
+                                              IGetUserServiceFromContextService getUserServiceFromContextService,
+                                              CacheManager cacheManager) {
+        this.taskJpaRepository = taskJpaRepository;
+        this.getUserServiceFromContextService = getUserServiceFromContextService;
+        this.cacheManager = cacheManager;
+    }
 
     @Override
     @Transactional

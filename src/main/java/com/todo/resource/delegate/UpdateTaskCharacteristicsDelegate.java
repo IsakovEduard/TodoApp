@@ -10,25 +10,24 @@ import com.todo.controller.api.model.V1UpdateCharacteristicsInput;
 import com.todo.resource.mapper.interfaces.IMapITaskToV1Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class UpdateTaskCharacteristicsDelegate {
     private static final Logger logger = LoggerFactory.getLogger(UpdateTaskCharacteristicsDelegate.class);
 
+    private final IUpdateTaskCharacteristicsApplicationService updateTaskCharacteristicsApplicationService;
+    private final IMapITaskToV1Task mapITaskToV1Task;
 
-    @Inject
-    private ObjectProvider<PatchElement> patchElementObjectProvider;
-    @Inject
-    private ObjectProvider<Characteristic> characteristicObjectProvider;
-    @Inject
-    private IUpdateTaskCharacteristicsApplicationService updateTaskCharacteristicsApplicationService;
-    @Inject
-    private IMapITaskToV1Task mapITaskToV1Task;
+    public UpdateTaskCharacteristicsDelegate(IUpdateTaskCharacteristicsApplicationService updateTaskCharacteristicsApplicationService,
+                                             IMapITaskToV1Task mapITaskToV1Task) {
+        this.updateTaskCharacteristicsApplicationService = updateTaskCharacteristicsApplicationService;
+        this.mapITaskToV1Task = mapITaskToV1Task;
+    }
 
     public List<V1Task> execute(V1UpdateCharacteristicsInput v1UpdateCharacteristicsInput) {
 
@@ -39,7 +38,7 @@ public class UpdateTaskCharacteristicsDelegate {
     }
 
     private PatchElement mapInput(V1UpdateCharacteristicsInput v1UpdateCharacteristicsInput) {
-        PatchElement patchElement = patchElementObjectProvider.getObject();
+        PatchElement patchElement = new PatchElement();
 
         if (v1UpdateCharacteristicsInput != null && !CollectionUtils.isEmpty(v1UpdateCharacteristicsInput.getCharacteristics())) {
             List<Characteristic> characteristics = mapCharacteristics(v1UpdateCharacteristicsInput);
@@ -54,7 +53,7 @@ public class UpdateTaskCharacteristicsDelegate {
         List<Characteristic> characteristics = new ArrayList<>();
         List<V1Characteristic> v1Characteristics = v1UpdateCharacteristicsInput.getCharacteristics();
         v1Characteristics.forEach(v1Characteristic -> {
-            Characteristic characteristic = characteristicObjectProvider.getObject();
+            Characteristic characteristic = new Characteristic();
             characteristic.setName(v1Characteristic.getName());
             characteristic.setValue(v1Characteristic.getValue());
             characteristics.add(characteristic);

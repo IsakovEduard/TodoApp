@@ -8,21 +8,23 @@ import com.todo.resource.mapper.interfaces.IMapITaskToV1Task;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.List;
 
+@Component
 public class GetTasksByFilterDelegate {
 
     private static final Logger logger = LoggerFactory.getLogger(GetTasksByFilterDelegate.class);
 
-    @Inject
-    private ObjectProvider<Filter> filterObjectProvider;
-    @Inject
-    private IGetTasksByFilterApplicationService getTasksByFilterApplicationService;
-    @Inject
-    private IMapITaskToV1Task outputMapper;
+    private final IGetTasksByFilterApplicationService getTasksByFilterApplicationService;
+    private final IMapITaskToV1Task outputMapper;
+
+    public GetTasksByFilterDelegate(IGetTasksByFilterApplicationService getTasksByFilterApplicationService,
+                                    IMapITaskToV1Task outputMapper) {
+        this.getTasksByFilterApplicationService = getTasksByFilterApplicationService;
+        this.outputMapper = outputMapper;
+    }
 
     public List<V1Task> execute(String taskId, String status, String urgency) {
 
@@ -42,7 +44,7 @@ public class GetTasksByFilterDelegate {
 
     private Filter mapFilter(String taskId, String status, String urgency) {
 
-        Filter filter = filterObjectProvider.getObject();
+        Filter filter = new Filter();
         filter.setTaskId(taskId);
         filter.setStatus(status);
         filter.setUrgency(urgency);

@@ -4,18 +4,19 @@ import com.todo.business.service.interfaces.IDeleteTasksByIdsApplicationService;
 import com.todo.controller.api.model.V1DeleteTaskInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import javax.inject.Inject;
-import java.util.List;
-
+@Component
 public class DeleteTasksByIdsDelegate {
 
     private static final Logger logger = LoggerFactory.getLogger(DeleteTasksByIdsDelegate.class);
 
-    @Inject
-    private IDeleteTasksByIdsApplicationService deleteTasksByIdsApplicationService;
+    private final IDeleteTasksByIdsApplicationService deleteTasksByIdsApplicationService;
 
+    public DeleteTasksByIdsDelegate(IDeleteTasksByIdsApplicationService deleteTasksByIdsApplicationService) {
+        this.deleteTasksByIdsApplicationService = deleteTasksByIdsApplicationService;
+    }
 
     public int delete(V1DeleteTaskInput v1DeleteTaskInput) {
         logger.info("In logger with input v1DeleteTaskInput: {}", v1DeleteTaskInput);

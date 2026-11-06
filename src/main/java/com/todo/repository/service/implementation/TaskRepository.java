@@ -5,17 +5,20 @@ import com.todo.repository.entity.Task;
 import com.todo.repository.mapper.interfaces.IMapTaskToTaskDTO;
 import com.todo.repository.service.interfaces.ITaskJpaRepository;
 import com.todo.repository.service.interfaces.ITaskRepository;
+import org.springframework.stereotype.Repository;
 
-import javax.inject.Inject;
 import java.util.List;
 
+@Repository
 public class TaskRepository implements ITaskRepository {
 
-    @Inject
-    private ITaskJpaRepository jpaRepository;
+    private final ITaskJpaRepository jpaRepository;
+    private final IMapTaskToTaskDTO mapTaskToTaskDTO;
 
-    @Inject
-    private IMapTaskToTaskDTO mapTaskToTaskDTO;
+    public TaskRepository(ITaskJpaRepository jpaRepository, IMapTaskToTaskDTO mapTaskToTaskDTO) {
+        this.jpaRepository = jpaRepository;
+        this.mapTaskToTaskDTO = mapTaskToTaskDTO;
+    }
 
     @Override
     public Task createTask(ITaskDTO taskDTO) {

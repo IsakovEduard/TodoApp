@@ -16,7 +16,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

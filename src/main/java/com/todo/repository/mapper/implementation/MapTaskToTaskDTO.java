@@ -1,21 +1,17 @@
 package com.todo.repository.mapper.implementation;
 
+import com.todo.business.model.implementation.TaskDTO;
 import com.todo.business.model.interfaces.ITaskDTO;
 import com.todo.repository.entity.Task;
 import com.todo.repository.mapper.interfaces.IMapTaskToTaskDTO;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
+@Component
 public class MapTaskToTaskDTO implements IMapTaskToTaskDTO {
 
-    @Inject
-    private ObjectProvider<Task> taskDtoProvider;
-    @Inject
-    private ObjectProvider<ITaskDTO> taskProvider;
     @Override
     public Task map(ITaskDTO taskDto) {
-        Task task = taskDtoProvider.getObject();
+        Task task = new Task();
         task.setId(taskDto.getId());
         task.setUser(taskDto.getUser());
         task.setTitle(taskDto.getTitle());
@@ -31,7 +27,7 @@ public class MapTaskToTaskDTO implements IMapTaskToTaskDTO {
 
     @Override
     public ITaskDTO reverseMap(Task task) {
-        ITaskDTO taskDTO = taskProvider.getObject();
+        ITaskDTO taskDTO = new TaskDTO();
         taskDTO.setId(task.getId());
         taskDTO.setUser(task.getUser());
         taskDTO.setTitle(task.getTitle());

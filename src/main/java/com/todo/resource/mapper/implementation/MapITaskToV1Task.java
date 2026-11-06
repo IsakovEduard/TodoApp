@@ -6,11 +6,13 @@ import com.todo.controller.api.model.V1Status;
 import com.todo.controller.api.model.V1Task;
 import com.todo.controller.api.model.V1Urgency;
 import com.todo.resource.mapper.interfaces.IMapITaskToV1Task;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class MapITaskToV1Task implements IMapITaskToV1Task {
 
     @Override

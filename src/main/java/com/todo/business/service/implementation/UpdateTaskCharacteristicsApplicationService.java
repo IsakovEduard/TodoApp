@@ -10,28 +10,33 @@ import com.todo.repository.entity.User;
 import com.todo.repository.mapper.interfaces.IMapTaskToTaskDTO;
 import com.todo.repository.service.interfaces.ITaskJpaRepository;
 import com.todo.repository.service.interfaces.ITaskRepository;
-import com.todo.repository.service.interfaces.IUserJpaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class UpdateTaskCharacteristicsApplicationService implements IUpdateTaskCharacteristicsApplicationService     {
+@Service
+public class UpdateTaskCharacteristicsApplicationService implements IUpdateTaskCharacteristicsApplicationService {
 
     private static final Logger logger = LoggerFactory.getLogger(UpdateTaskCharacteristicsApplicationService.class);
 
-    @Inject
-    private ITaskRepository taskRepository;
-    @Inject
-    private ITaskJpaRepository taskJpaRepository;
-    @Inject
-    private IMapTaskToTaskDTO mapTaskToTaskDTO;
-    @Inject
-    private IGetUserServiceFromContextService getUserServiceFromContextService;
+    private final ITaskRepository taskRepository;
+    private final ITaskJpaRepository taskJpaRepository;
+    private final IMapTaskToTaskDTO mapTaskToTaskDTO;
+    private final IGetUserServiceFromContextService getUserServiceFromContextService;
+
+    public UpdateTaskCharacteristicsApplicationService(ITaskRepository taskRepository,
+                                                       ITaskJpaRepository taskJpaRepository,
+                                                       IMapTaskToTaskDTO mapTaskToTaskDTO,
+                                                       IGetUserServiceFromContextService getUserServiceFromContextService) {
+        this.taskRepository = taskRepository;
+        this.taskJpaRepository = taskJpaRepository;
+        this.mapTaskToTaskDTO = mapTaskToTaskDTO;
+        this.getUserServiceFromContextService = getUserServiceFromContextService;
+    }
 
     @Override
     @CachePut(

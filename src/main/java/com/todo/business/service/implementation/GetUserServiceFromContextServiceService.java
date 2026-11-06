@@ -4,14 +4,18 @@ import com.todo.business.service.interfaces.IGetUserServiceFromContextService;
 import com.todo.repository.entity.User;
 import com.todo.repository.service.interfaces.IUserJpaRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-
+@Service
 public class GetUserServiceFromContextServiceService implements IGetUserServiceFromContextService {
 
-    @Inject
-    private IUserJpaRepository userJpaRepository;
+    private final IUserJpaRepository userJpaRepository;
 
+    public GetUserServiceFromContextServiceService(IUserJpaRepository userJpaRepository) {
+        this.userJpaRepository = userJpaRepository;
+    }
+
+    @Override
     public User getUserFromContext() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userJpaRepository.findByUsername(username).orElseThrow();

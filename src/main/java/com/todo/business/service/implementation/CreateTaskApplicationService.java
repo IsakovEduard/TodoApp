@@ -6,24 +6,28 @@ import com.todo.business.service.interfaces.IGetUserServiceFromContextService;
 import com.todo.repository.entity.User;
 import com.todo.repository.mapper.interfaces.IMapTaskToTaskDTO;
 import com.todo.repository.service.interfaces.ITaskRepository;
-import com.todo.repository.service.interfaces.IUserJpaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.time.LocalDateTime;
 
+@Service
 public class CreateTaskApplicationService implements ICreateTaskApplicationService {
 
     private static final Logger logger = LoggerFactory.getLogger(CreateTaskApplicationService.class);
 
-    @Inject
-    private ITaskRepository taskRepository;
-    @Inject
-    private IMapTaskToTaskDTO mapper;
-    @Inject
-    private IGetUserServiceFromContextService getUserServiceFromContextService;
+    private final ITaskRepository taskRepository;
+    private final IMapTaskToTaskDTO mapper;
+    private final IGetUserServiceFromContextService getUserServiceFromContextService;
+
+    public CreateTaskApplicationService(ITaskRepository taskRepository,
+                                        IMapTaskToTaskDTO mapper,
+                                        IGetUserServiceFromContextService getUserServiceFromContextService) {
+        this.taskRepository = taskRepository;
+        this.mapper = mapper;
+        this.getUserServiceFromContextService = getUserServiceFromContextService;
+    }
 
     @Override
     public ITaskDTO execute(ITaskDTO taskDto) {

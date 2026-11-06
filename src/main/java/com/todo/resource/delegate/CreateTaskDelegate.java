@@ -1,5 +1,6 @@
 package com.todo.resource.delegate;
 
+import com.todo.business.model.implementation.TaskDTO;
 import com.todo.business.model.interfaces.ITaskDTO;
 import com.todo.business.service.interfaces.ICreateTaskApplicationService;
 
@@ -9,19 +10,19 @@ import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-
+@Component
 public class CreateTaskDelegate {
 
     private static final Logger logger = LoggerFactory.getLogger(CreateTaskDelegate.class);
 
+    private final ICreateTaskApplicationService createTaskApplicationService;
 
-    @Inject
-    private ICreateTaskApplicationService createTaskApplicationService;
-    @Inject
-    private ObjectProvider<ITaskDTO> taskObjectProvider;
+    public CreateTaskDelegate(ICreateTaskApplicationService createTaskApplicationService) {
+        this.createTaskApplicationService = createTaskApplicationService;
+    }
+
     public ITaskDTO addTask( V1CreateTaskInput v1CreateTaskInput) {
         logger.info("Executing AddTaskDelegate: {}", v1CreateTaskInput);
         validateInput(v1CreateTaskInput);
@@ -49,7 +50,7 @@ public class CreateTaskDelegate {
     }
 
     private ITaskDTO mapInput(V1CreateTaskInput input) {
-        ITaskDTO task = taskObjectProvider.getObject();
+        ITaskDTO task = new TaskDTO();
         task.setTitle(input.getTitle());
         task.setDescription(input.getDescription());
         task.setUrgency(input.getUrgency().getValue());

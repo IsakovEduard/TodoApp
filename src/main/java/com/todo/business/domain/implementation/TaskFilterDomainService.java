@@ -5,10 +5,12 @@ import com.todo.business.model.implementation.Filter;
 import com.todo.repository.entity.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class TaskFilterDomainService implements ITaskFilterDomainService {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskFilterDomainService.class);

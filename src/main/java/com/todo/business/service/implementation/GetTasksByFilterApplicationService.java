@@ -9,23 +9,29 @@ import com.todo.repository.entity.Task;
 import com.todo.repository.entity.User;
 import com.todo.repository.mapper.interfaces.IMapTaskToTaskDTO;
 import com.todo.repository.service.interfaces.ITaskRepository;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class GetTasksByFilterApplicationService implements IGetTasksByFilterApplicationService {
 
-    @Inject
-    private ITaskRepository taskRepository;
-    @Inject
-    private IGetUserServiceFromContextService getUserServiceFromContextService;
-    @Inject
-    private IMapTaskToTaskDTO mapper;
-    @Inject
-    private ITaskFilterDomainService taskFilterDomainService;
+    private final ITaskRepository taskRepository;
+    private final IGetUserServiceFromContextService getUserServiceFromContextService;
+    private final IMapTaskToTaskDTO mapper;
+    private final ITaskFilterDomainService taskFilterDomainService;
 
+    public GetTasksByFilterApplicationService(ITaskRepository taskRepository,
+                                              IGetUserServiceFromContextService getUserServiceFromContextService,
+                                              IMapTaskToTaskDTO mapper,
+                                              ITaskFilterDomainService taskFilterDomainService) {
+        this.taskRepository = taskRepository;
+        this.getUserServiceFromContextService = getUserServiceFromContextService;
+        this.mapper = mapper;
+        this.taskFilterDomainService = taskFilterDomainService;
+    }
 
     @Override
     public List<ITaskDTO> execute(Filter filter) {
