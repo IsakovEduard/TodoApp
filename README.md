@@ -49,6 +49,12 @@ docker compose up --build
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
+In **PowerShell** the argument must be quoted, otherwise Maven reports `Unknown lifecycle phase ".run.profiles=dev"`:
+
+```powershell
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev"
+```
+
 In IntelliJ, set the active profile to `dev` in the run configuration. To use a real secret locally instead, set `JWT_SECRET` (bash: `export JWT_SECRET='...'`, PowerShell: `$env:JWT_SECRET = '...'`).
 
 Note: without the `dev` profile the datasource path is `/app/data/todo-db` (the Docker location); override `spring.datasource.url` when running outside Docker.

@@ -45,6 +45,6 @@ Read `instructions/CODING_STANDARDS.md` **before** writing, modifying, refactori
 
 - Build/test: `./mvnw clean verify` (also installs Node via `frontend-maven-plugin`, builds the UI and runs the frontend tests; add `-DskipFrontend` for backend-only work)
 - Frontend only: `cd frontend && npm test`, `npm run build`, `npm run lint`, `npm run dev`. After changing `task_management.yaml`, run `npm run api:generate` and commit the result. The Maven Node version (`frontend.node.version` in `pom.xml`) must satisfy the `engines` field in `frontend/package.json`
-- Run: `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev` or `docker compose up --build`
+- Run: `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev` or `docker compose up --build`. In PowerShell quote `-D` arguments that contain a dot: `.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=dev"`
 - Manual API requests: `src/main/resources/test.http`
 - `out/` is IDE build output; don't commit it.
