@@ -42,7 +42,7 @@ public class UpdateTaskCharacteristicsApplicationService implements IUpdateTaskC
     @Override
     @CachePut(
             cacheNames = TaskConstants.CACHE_TASKS,
-            key = "#patchElement.taskId()",
+            key = "T(com.todo.business.cache.TaskCacheKeys).forCurrentUser(#patchElement.taskId())",
             unless = "#result == null"
     )
     public ITaskDTO execute(PatchElement patchElement) {

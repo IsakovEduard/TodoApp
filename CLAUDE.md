@@ -34,7 +34,7 @@ Read `instructions/CODING_STANDARDS.md` **before** writing, modifying, refactori
 - **Data objects are not beans:** create DTOs, `Filter`, `PatchElement`, `Characteristic` and entities with `new`.
 - **One application service per use case**, with an `I`-prefixed interface (e.g. `IGetTaskByIdApplicationService`).
 - **User scoping:** resolve the current user via `IGetUserFromContextService`; task queries must filter by user id.
-- **Cache:** Caffeine cache `tasks` (`CacheConfig`), keyed by task id via `@CachePut`/`@Cacheable`. Keep it consistent when changing task read/write paths.
+- **Cache:** Caffeine cache `tasks` (`CacheConfig`), keyed per user and task id via `TaskCacheKeys` (`@Cacheable` on get, `@CachePut` on update, explicit eviction on delete). Always build keys with `TaskCacheKeys` so users never share entries, and keep all read/write paths consistent.
 - **Task updates:** `UpdateTaskCharacteristicsApplicationService` accepts only TITLE, DESCRIPTION, DUE_DATE, CREATED_AT, URGENCY, STATUS; anything else throws `IllegalArgumentException`.
 - **Config:** `application.properties` points H2 at `/app/data/todo-db` (Docker path); override `spring.datasource.url` for local runs.
 

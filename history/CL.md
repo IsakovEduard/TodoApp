@@ -1,5 +1,6 @@
 # Change List
 
+- 2026-11-06 – FIX: Restrict task lookup by id to the owning user and scope cache entries per user
 - 2026-11-06 – FIX: Cache task lookups for all ids by removing leftover cache condition
 - 2026-11-06 – DOCS: Add commit approval, post-test review and choice prompt workflow rules
 - 2026-11-06 – FIX: Externalize JWT secret and expiration to validated configuration

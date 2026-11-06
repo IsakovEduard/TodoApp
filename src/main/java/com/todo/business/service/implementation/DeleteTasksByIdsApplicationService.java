@@ -1,5 +1,6 @@
 package com.todo.business.service.implementation;
 
+import com.todo.business.cache.TaskCacheKeys;
 import com.todo.business.constant.TaskConstants;
 import com.todo.business.service.interfaces.IDeleteTasksByIdsApplicationService;
 import com.todo.business.service.interfaces.IGetUserFromContextService;
@@ -36,7 +37,7 @@ public class DeleteTasksByIdsApplicationService implements IDeleteTasksByIdsAppl
 
         Cache cache = cacheManager.getCache(TaskConstants.CACHE_TASKS);
         if (cache != null) {
-            taskIds.forEach(cache::evict);
+            taskIds.forEach(taskId -> cache.evict(TaskCacheKeys.of(user.getUsername(), taskId)));
         }
         return deletedTasks;
     }

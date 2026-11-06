@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 class DeleteTasksByIdsApplicationServiceTest {
 
     private static final long USER_ID = 1L;
+    private static final String USERNAME = "testUser";
 
     @Mock
     private ITaskJpaRepository taskJpaRepository;
@@ -39,7 +40,7 @@ class DeleteTasksByIdsApplicationServiceTest {
 
         User mockUser = new User();
         mockUser.setId(USER_ID);
-        mockUser.setUsername("testUser");
+        mockUser.setUsername(USERNAME);
         when(getUserFromContextService.getUserFromContext()).thenReturn(mockUser);
         when(cacheManager.getCache("tasks")).thenReturn(cache);
     }
@@ -67,13 +68,12 @@ class DeleteTasksByIdsApplicationServiceTest {
     }
 
     @Test
-    void execute_ShouldEvictDeletedTasksFromCache() {
-        List<String> taskIds = List.of("1", "2");
+    void execute_ShouldEvictDeletedTasksFromCacheForCurrentUser() {
         when(taskJpaRepository.deactivateAndCancelTasks(USER_ID, List.of(1L, 2L))).thenReturn(2);
 
-        service.execute(taskIds);
+        service.execute(List.of("1", "2"));
 
-        verify(cache).evict("1");
-        verify(cache).evict("2");
+        verify(cache).evict(List.of(USERNAME, "1"));
+        verify(cache).evict(List.of(USERNAME, "2"));
     }
 }

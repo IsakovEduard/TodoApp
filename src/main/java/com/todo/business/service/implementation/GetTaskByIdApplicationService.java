@@ -3,7 +3,9 @@ package com.todo.business.service.implementation;
 import com.todo.business.constant.TaskConstants;
 import com.todo.business.model.interfaces.ITaskDTO;
 import com.todo.business.service.interfaces.IGetTaskByIdApplicationService;
+import com.todo.business.service.interfaces.IGetUserFromContextService;
 import com.todo.repository.entity.Task;
+import com.todo.repository.entity.User;
 import com.todo.repository.mapper.interfaces.IMapTaskToTaskDTO;
 import com.todo.repository.service.interfaces.ITaskJpaRepository;
 import org.slf4j.Logger;
@@ -18,21 +20,26 @@ public class GetTaskByIdApplicationService implements IGetTaskByIdApplicationSer
 
     private final ITaskJpaRepository jpaRepository;
     private final IMapTaskToTaskDTO mapper;
+    private final IGetUserFromContextService getUserFromContextService;
 
-    public GetTaskByIdApplicationService(ITaskJpaRepository jpaRepository, IMapTaskToTaskDTO mapper) {
+    public GetTaskByIdApplicationService(ITaskJpaRepository jpaRepository,
+                                         IMapTaskToTaskDTO mapper,
+                                         IGetUserFromContextService getUserFromContextService) {
         this.jpaRepository = jpaRepository;
         this.mapper = mapper;
+        this.getUserFromContextService = getUserFromContextService;
     }
 
     @Override
     @Transactional(readOnly = true)
     @Cacheable(
             cacheNames = TaskConstants.CACHE_TASKS,
-            key = "#id.toString()",
+            key = "T(com.todo.business.cache.TaskCacheKeys).forCurrentUser(#id)",
             unless = "#result == null")
     public ITaskDTO execute(String id) {
-        logger.info("Loading task id={}", id);
-        Task task = jpaRepository.findById(Long.valueOf(id))
+        User user = getUserFromContextService.getUserFromContext();
+        logger.info("Loading task id={} for userId={}", id, user.getId());
+        Task task = jpaRepository.findByUserIdAndId(user.getId(), Long.valueOf(id))
                 .orElseThrow(() -> new RuntimeException("Task not found"));
         if (TaskConstants.ACTIVATION_DELETED.equals(task.getActivationStatus())) {
             throw new RuntimeException("Task is deleted!");
