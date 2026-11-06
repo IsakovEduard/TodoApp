@@ -6,20 +6,22 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.time.Duration;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
 
-    private static final String SECRET = "ISAKOV_EDU_PROJECT$ecureJWT@ISR!KOR";
-    private static final long EXPIRATION_MILLIS = Duration.ofHours(1).toMillis();
+    private final Key key;
+    private final long expirationMillis;
 
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+    public JwtUtil(JwtProperties properties) {
+        this.key = Keys.hmacShaKeyFor(properties.secret().getBytes(StandardCharsets.UTF_8));
+        this.expirationMillis = properties.expiration().toMillis();
+    }
 
     public String generateToken(String username) {
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + EXPIRATION_MILLIS);
+        Date expiry = new Date(now.getTime() + expirationMillis);
 
         return Jwts.builder()
                 .setSubject(username)

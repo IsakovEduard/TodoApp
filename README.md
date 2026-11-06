@@ -35,12 +35,22 @@ The API is contract-first: endpoints and models are defined in an OpenAPI specif
 
 ## Running
 
-```bash
-# Docker
-docker compose up --build
+The JWT signing secret is required and is read from the `JWT_SECRET` environment variable (at least 32 characters). Without a valid secret the application fails to start. Token lifetime is `app.jwt.expiration` (default `1h`).
 
-# Local (note: the default datasource path is /app/data/todo-db; override spring.datasource.url outside Docker)
-./mvnw spring-boot:run
+**Docker:** copy `.env.example` to `.env`, set `JWT_SECRET` in it, then run:
+
+```bash
+docker compose up --build
 ```
+
+**Local development:** use the `dev` profile, which supplies a fixed, non-secret key. Never use it in production.
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+In IntelliJ, set the active profile to `dev` in the run configuration. To use a real secret locally instead, set `JWT_SECRET` (bash: `export JWT_SECRET='...'`, PowerShell: `$env:JWT_SECRET = '...'`).
+
+Note: the default datasource path is `/app/data/todo-db`; override `spring.datasource.url` when running outside Docker.
 
 The service listens on `http://localhost:8080`. Obtain a token via `POST /auth/login` and send it as `Authorization: Bearer <token>`. Sample requests are in `src/main/resources/test.http`.
