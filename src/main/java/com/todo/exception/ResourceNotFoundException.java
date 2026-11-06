@@ -1,4 +1,4 @@
-package com.todo.controller.exception.custom;
+package com.todo.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String msg) { super(msg); }

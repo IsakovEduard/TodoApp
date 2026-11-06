@@ -22,6 +22,7 @@ Read `instructions/CODING_STANDARDS.md` **before** writing, modifying, refactori
 ## Structure (`src/main/java/com/todo`)
 
 - `controller/` – REST controllers (`TaskControllerImpl`, `AuthControllerImpl`), `exception/` handler, `api/task_management.yaml` (OpenAPI spec, source of truth for the task API)
+- `exception/` (`com.todo.exception`) – custom exceptions usable from any layer; `CustomExceptionHandler` maps them: `ResourceNotFoundException` → 404 (missing, deleted or not-owned tasks), `UnauthorizedException` → 401 (invalid credentials), `IllegalArgumentException` → 400, other `RuntimeException` → 500
 - `business/` – `service/` (application services, one per use case), `domain/`, `model/` (DTOs), `config/` (cache)
 - `resource/` – `delegate/` (input validation and request/response mapping between controller and services), `mapper/`
 - `repository/` – JPA `entity/`, `mapper/`, `service/` (repositories)

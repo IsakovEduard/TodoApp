@@ -4,6 +4,7 @@ import com.todo.business.constant.TaskConstants;
 import com.todo.business.model.interfaces.ITaskDTO;
 import com.todo.business.service.interfaces.IGetTaskByIdApplicationService;
 import com.todo.business.service.interfaces.IGetUserFromContextService;
+import com.todo.exception.ResourceNotFoundException;
 import com.todo.repository.entity.Task;
 import com.todo.repository.entity.User;
 import com.todo.repository.mapper.interfaces.IMapTaskToTaskDTO;
@@ -40,9 +41,9 @@ public class GetTaskByIdApplicationService implements IGetTaskByIdApplicationSer
         User user = getUserFromContextService.getUserFromContext();
         logger.info("Loading task id={} for userId={}", id, user.getId());
         Task task = jpaRepository.findByUserIdAndId(user.getId(), Long.valueOf(id))
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
         if (TaskConstants.ACTIVATION_DELETED.equals(task.getActivationStatus())) {
-            throw new RuntimeException("Task is deleted!");
+            throw new ResourceNotFoundException("Task is deleted!");
         }
         return mapper.reverseMap(task);
     }

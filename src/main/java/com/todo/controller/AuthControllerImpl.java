@@ -1,5 +1,6 @@
 package com.todo.controller;
 
+import com.todo.exception.UnauthorizedException;
 import com.todo.repository.entity.User;
 import com.todo.security.dto.JwtResponse;
 import com.todo.security.dto.LoginRequest;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth")
 public class AuthControllerImpl {
+
+    private static final String INVALID_CREDENTIALS = "Invalid credentials";
 
     private final IUserJpaRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -44,10 +47,10 @@ public class AuthControllerImpl {
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
         User user = userRepository.findByUsername(request.username())
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+                .orElseThrow(() -> new UnauthorizedException(INVALID_CREDENTIALS));
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new UnauthorizedException(INVALID_CREDENTIALS);
         }
 
         String token = jwtUtil.generateToken(user.getUsername());

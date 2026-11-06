@@ -2,6 +2,7 @@ package com.todo.repository.service.implementation;
 
 import com.todo.business.constant.TaskConstants;
 import com.todo.business.model.interfaces.ITaskDTO;
+import com.todo.exception.ResourceNotFoundException;
 import com.todo.repository.entity.Task;
 import com.todo.repository.mapper.interfaces.IMapTaskToTaskDTO;
 import com.todo.repository.service.interfaces.ITaskJpaRepository;
@@ -39,9 +40,9 @@ public class TaskRepository implements ITaskRepository {
     @Override
     public Task getTaskByUserIdAndTaskId(Long userId, Long taskId) {
         Task task = jpaRepository.findByUserIdAndId(userId, taskId)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
         if (TaskConstants.ACTIVATION_DELETED.equals(task.getActivationStatus())) {
-            throw new RuntimeException("Cannot modify deleted task!");
+            throw new ResourceNotFoundException("Cannot modify deleted task!");
         }
         return task;
     }

@@ -11,6 +11,7 @@ import com.todo.business.service.interfaces.IDeleteTasksByIdsApplicationService;
 import com.todo.business.service.interfaces.IGetTaskByIdApplicationService;
 import com.todo.business.service.interfaces.IGetUserFromContextService;
 import com.todo.business.service.interfaces.IUpdateTaskCharacteristicsApplicationService;
+import com.todo.exception.ResourceNotFoundException;
 import com.todo.repository.entity.Task;
 import com.todo.repository.entity.User;
 import com.todo.repository.mapper.interfaces.IMapTaskToTaskDTO;
@@ -102,7 +103,7 @@ class TaskCacheTest {
         loginAs(BOB_ID, "bob");
         when(jpaRepository.findByUserIdAndId(BOB_ID, 5L)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> getTaskById.execute("5"));
+        assertThrows(ResourceNotFoundException.class, () -> getTaskById.execute("5"));
         verify(jpaRepository).findByUserIdAndId(BOB_ID, 5L);
     }
 
@@ -112,7 +113,7 @@ class TaskCacheTest {
         task.setActivationStatus("DE");
         when(jpaRepository.findByUserIdAndId(ALICE_ID, 9L)).thenReturn(Optional.of(task));
 
-        assertThrows(RuntimeException.class, () -> getTaskById.execute("9"));
+        assertThrows(ResourceNotFoundException.class, () -> getTaskById.execute("9"));
         verify(mapper, never()).reverseMap(any());
     }
 
