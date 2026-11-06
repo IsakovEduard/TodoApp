@@ -43,6 +43,8 @@ The JWT signing secret is required and is read from the `JWT_SECRET` environment
 docker compose up --build
 ```
 
+**Quick start on Windows:** run `scripts\start-dev.cmd` (double-click it, or run it from any terminal). It checks Java and the port, builds the UI, starts the app with the `dev` profile and opens the browser when it is ready. Options: `-Port 9090`, `-SkipFrontend` (faster, UI not rebuilt) and `-NoBrowser`. Stop it with Ctrl+C. Only one instance can run at a time because they share the dev database.
+
 **Local development:** use the `dev` profile, which supplies a fixed, non-secret key and stores data in `./data/todo-dev` (git-ignored). Never use it in production.
 
 ```bash

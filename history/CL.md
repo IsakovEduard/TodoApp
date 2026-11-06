@@ -1,5 +1,6 @@
 # Change List
 
+- 2026-11-06 – CHORE: Add a Windows script to start the app in development mode
 - 2026-11-06 – DOCS: Document the PowerShell form of the dev profile run command
 - 2026-11-06 – FIX: Validate task update values, allow clearing a due date and make description optional
 - 2026-11-06 – FEATURE: Add task management screens to the web UI
