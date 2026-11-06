@@ -10,7 +10,7 @@ export function AppHeader() {
 
   return (
     <header className="border-b border-border bg-surface">
-      <div className="mx-auto flex min-h-16 max-w-270 flex-wrap items-center gap-3 px-6 py-2">
+      <div className="mx-auto flex min-h-16 max-w-270 items-center gap-3 px-6 py-2">
         <Logo />
         <span className="grow text-lg font-bold">Tasks</span>
         <ThemeToggle />
@@ -18,7 +18,8 @@ export function AppHeader() {
         <button
           type="button"
           onClick={() => dispatch(loggedOut())}
-          className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-[10px] border border-border-strong bg-surface px-3.5 text-sm font-medium"
+          aria-label="Log out"
+          className="inline-flex h-11 min-w-11 cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-border-strong bg-surface px-2.5 text-sm font-medium sm:px-3.5"
         >
           <svg
             width="18"
@@ -35,7 +36,7 @@ export function AppHeader() {
             <path d="M16 17l5-5-5-5" />
             <path d="M21 12H9" />
           </svg>
-          Log out
+          <span className="hidden sm:inline">Log out</span>
         </button>
       </div>
     </header>

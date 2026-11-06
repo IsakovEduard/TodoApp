@@ -5,6 +5,7 @@ import { server } from '../../test/server'
 import { renderApp } from '../../test/renderApp'
 
 function mockMe(username = 'alice') {
+  server.use(http.get('/task-management', () => HttpResponse.json([])))
   server.use(http.get('/auth/me', () => HttpResponse.json({ username })))
 }
 
@@ -26,7 +27,7 @@ describe('login', () => {
     await fillCredentials('alice', 'secret')
     await userEvent.click(screen.getByRole('button', { name: 'Log in' }))
 
-    expect(await screen.findByText('Signed in as alice')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'My tasks' })).toBeInTheDocument()
     expect(store.getState().auth.token).toBe('jwt-1')
     expect(localStorage.getItem('todo.token')).toBe('jwt-1')
   })
@@ -64,7 +65,7 @@ describe('login', () => {
     mockMe()
     renderApp('/login', 'existing-token')
 
-    expect(await screen.findByText('Signed in as alice')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'My tasks' })).toBeInTheDocument()
   })
 })
 
@@ -80,7 +81,7 @@ describe('registration', () => {
     await fillCredentials('bob', 'secret')
     await userEvent.click(screen.getByRole('button', { name: 'Create account' }))
 
-    expect(await screen.findByText('Signed in as bob')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'My tasks' })).toBeInTheDocument()
     expect(store.getState().auth.token).toBe('jwt-2')
   })
 
@@ -116,7 +117,7 @@ describe('session handling', () => {
   it('logs out and clears the stored token', async () => {
     mockMe()
     const store = renderApp('/tasks', 'valid-token')
-    await screen.findByText('Signed in as alice')
+    await screen.findByRole('heading', { name: 'My tasks' })
 
     await userEvent.click(screen.getByRole('button', { name: 'Log out' }))
 

@@ -1,6 +1,7 @@
 import { combineReducers, configureStore, createListenerMiddleware } from '@reduxjs/toolkit'
 import { baseApi } from '../api/baseApi'
 import authReducer, { loggedOut, TOKEN_KEY } from '../features/auth/authSlice'
+import tasksUiReducer from '../features/tasks/tasksUiSlice'
 import themeReducer, { THEME_KEY } from '../features/theme/themeSlice'
 import { writeStored } from './storage'
 
@@ -8,6 +9,7 @@ const rootReducer = combineReducers({
   [baseApi.reducerPath]: baseApi.reducer,
   auth: authReducer,
   theme: themeReducer,
+  tasksUi: tasksUiReducer,
 })
 
 export function makeStore(preloadedState?: Partial<ReturnType<typeof rootReducer>>) {

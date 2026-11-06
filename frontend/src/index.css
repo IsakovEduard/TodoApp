@@ -64,3 +64,55 @@ body {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+
+:root {
+  --badge-high-bg: #fdecea;
+  --badge-high-ink: #9f1d12;
+  --badge-normal-bg: #fff3d6;
+  --badge-normal-ink: #7a4b00;
+  --badge-low-bg: #e8eef4;
+  --badge-low-ink: #34495e;
+  --badge-progress-bg: #e3effd;
+  --badge-progress-ink: #14508c;
+  --badge-completed-bg: #e1f3e6;
+  --badge-completed-ink: #1d6b34;
+  --badge-cancelled-bg: #ecebe8;
+  --badge-cancelled-ink: #55524b;
+  --badge-scheduled-bg: #eee9fb;
+  --badge-scheduled-ink: #4a3a94;
+}
+
+.dark {
+  --badge-high-bg: #4a1b17;
+  --badge-high-ink: #ffb4a9;
+  --badge-normal-bg: #4a3410;
+  --badge-normal-ink: #ffd98a;
+  --badge-low-bg: #2a3642;
+  --badge-low-ink: #b8cce0;
+  --badge-progress-bg: #14304f;
+  --badge-progress-ink: #a9cdfa;
+  --badge-completed-bg: #17391f;
+  --badge-completed-ink: #a6e3b3;
+  --badge-cancelled-bg: #33312d;
+  --badge-cancelled-ink: #c9c5bb;
+  --badge-scheduled-bg: #2e2754;
+  --badge-scheduled-ink: #cfc4fa;
+}
+
+@layer components {
+  .badge {
+    display: inline-block;
+    padding: 0.25rem 0.625rem;
+    border-radius: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge-high { background: var(--badge-high-bg); color: var(--badge-high-ink); }
+  .badge-normal { background: var(--badge-normal-bg); color: var(--badge-normal-ink); }
+  .badge-low { background: var(--badge-low-bg); color: var(--badge-low-ink); }
+  .badge-in-progress { background: var(--badge-progress-bg); color: var(--badge-progress-ink); }
+  .badge-completed { background: var(--badge-completed-bg); color: var(--badge-completed-ink); }
+  .badge-cancelled { background: var(--badge-cancelled-bg); color: var(--badge-cancelled-ink); }
+  .badge-scheduled { background: var(--badge-scheduled-bg); color: var(--badge-scheduled-ink); }
+}
