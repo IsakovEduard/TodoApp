@@ -21,12 +21,13 @@ Read `instructions/CODING_STANDARDS.md` **before** writing, modifying, refactori
 
 ## Structure (`src/main/java/com/todo`)
 
-- `controller/` – REST controllers (`TaskControllerImpl`, `AuthControllerImpl`), `exception/` handler, `api/task_management.yaml` (OpenAPI spec, source of truth for the task API)
-- `exception/` (`com.todo.exception`) – custom exceptions usable from any layer; `CustomExceptionHandler` maps them: `ResourceNotFoundException` → 404 (missing, deleted or not-owned tasks), `UnauthorizedException` → 401 (invalid credentials), `IllegalArgumentException` → 400, other `RuntimeException` → 500
+- `controller/` – REST controllers (`TaskControllerImpl`, `AuthControllerImpl`), `exception/` handler, `api/task_management.yaml` (OpenAPI spec, source of truth for the whole API: auth and tasks, including error shapes)
+- `exception/` (`com.todo.exception`) – custom exceptions usable from any layer; `CustomExceptionHandler` maps them: `ResourceNotFoundException` → 404 (missing, deleted or not-owned tasks), `UnauthorizedException` → 401 (invalid credentials), `IllegalArgumentException` and unreadable request bodies → 400, unknown paths (`NoResourceFoundException`) → 404, other `RuntimeException` → 500. A missing, invalid or expired token is rejected by the security entry point with 401
 - `business/` – `service/` (application services, one per use case), `domain/`, `model/` (DTOs), `config/` (cache)
 - `resource/` – `delegate/` (input validation and request/response mapping between controller and services), `mapper/`
 - `repository/` – JPA `entity/`, `mapper/`, `service/` (repositories)
-- `security/` – JWT filter/util, security config, auth DTOs
+- `security/` – JWT filter/util/properties, security config, user details service
+- `ui/` – web UI hosting: `UiRoutes` (public paths, shared with `SecurityConfig`) and `SpaForwardingController`, which forwards client-side routes (`/login`, `/register`, `/tasks/**`) to `index.html`. The frontend build is served from `static/`. A new client route must be added to `UiRoutes` (both the constant and `PUBLIC_PATHS`)
 
 ## Conventions and gotchas
 

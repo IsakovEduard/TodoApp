@@ -13,12 +13,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = "spring.datasource.url=jdbc:h2:mem:api-errors;DB_CLOSE_DELAY=-1")
 @AutoConfigureMockMvc
 @ActiveProfiles("dev")
-class ApiErrorResponsesTest {
+class ApiIntegrationTest {
 
     private static final String PASSWORD = "pw123456";
     private static final String NEW_TASK_JSON =
@@ -140,11 +141,52 @@ class ApiErrorResponsesTest {
     }
 
     @Test
-    void request_ShouldBeRejectedWith403_WhenTokenUserNoLongerExists() throws Exception {
+    void request_ShouldBeRejectedWith401_WhenTokenUserNoLongerExists() throws Exception {
         String tokenOfUnknownUser = jwtUtil.generateToken("ghost-" + UUID.randomUUID());
 
         mockMvc.perform(get("/task-management").header("Authorization", bearer(tokenOfUnknownUser)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void request_ShouldReturn401_WhenTokenIsMissing() throws Exception {
+        mockMvc.perform(get("/task-management")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void request_ShouldReturn401_WhenTokenIsInvalid() throws Exception {
+        mockMvc.perform(get("/task-management").header("Authorization", bearer("not-a-valid-token")))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void unknownPath_ShouldReturn404_WhenAuthenticated() throws Exception {
+        String token = loginAs(registerUser());
+
+        mockMvc.perform(get("/does-not-exist").header("Authorization", bearer(token)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void me_ShouldReturnUsername_WhenAuthenticated() throws Exception {
+        String username = registerUser();
+        String token = loginAs(username);
+
+        mockMvc.perform(get("/auth/me").header("Authorization", bearer(token)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value(username));
+    }
+
+    @Test
+    void me_ShouldReturn401_WhenNotAuthenticated() throws Exception {
+        mockMvc.perform(get("/auth/me")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void register_ShouldReturn400_WhenUsernameIsOnlyWhitespace() throws Exception {
+        mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON)
+                        .content(credentials("   ", PASSWORD)))
+                .andExpect(status().isBadRequest());
     }
 
     private String registerUser() throws Exception {

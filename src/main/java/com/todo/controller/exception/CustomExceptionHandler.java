@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -50,6 +51,12 @@ public class CustomExceptionHandler {
     public ResponseEntity<?> handleUnreadableBody(HttpMessageNotReadableException ex, WebRequest request) {
         return new ResponseEntity<>(buildBody("Malformed or invalid request body", request, HttpStatus.BAD_REQUEST),
                 HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<?> handleNoResource(NoResourceFoundException ex, WebRequest request) {
+        return new ResponseEntity<>(buildBody("Resource not found", request, HttpStatus.NOT_FOUND),
+                HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)

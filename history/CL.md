@@ -1,5 +1,6 @@
 # Change List
 
+- 2026-11-06 – FEATURE: Prepare the backend for a bundled web UI
 - 2026-11-06 – CHORE: Give the dev profile its own local H2 database file
 - 2026-11-06 – CHORE: Remove unused OpenAPI model template and ignore IDE build output
 - 2026-11-06 – FIX: Return 400 for missing or invalid urgency and unreadable request bodies

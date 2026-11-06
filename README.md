@@ -10,7 +10,7 @@ The API is contract-first: endpoints and models are defined in an OpenAPI specif
 
 ## Features
 
-- **Authentication:** user registration and login (`/auth/register`, `/auth/login`); passwords stored hashed; stateless JWT authentication on all other endpoints.
+- **Authentication:** user registration and login (`/auth/register`, `/auth/login`) and current-user lookup (`/auth/me`); passwords stored hashed; stateless JWT authentication on all other endpoints. Requests without a valid token receive `401`.
 - **Task management** (`/task-management`):
   - Create a task (title, description, urgency, due date)
   - Get a task by id
