@@ -29,7 +29,6 @@ public class GetTaskByIdApplicationService implements IGetTaskByIdApplicationSer
     @Cacheable(
             cacheNames = TaskConstants.CACHE_TASKS,
             key = "#id.toString()",
-            condition = "#id != '3'",
             unless = "#result == null")
     public ITaskDTO execute(String id) {
         logger.info("Loading task id={}", id);
