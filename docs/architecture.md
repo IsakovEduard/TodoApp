@@ -6,16 +6,32 @@ Layers, request flow, hosting, config. Endpoint behavior: [api/auth.md](api/auth
 
 ```mermaid
 flowchart LR
-    Client --> SEC[security: JwtAuthFilter, SecurityConfig]
-    SEC --> C[controller: *ControllerImpl]
-    C --> D[resource/delegate: validate + map]
-    D --> S[business/service: one per use case]
-    S --> R[repository/service]
-    R --> DB[(H2)]
-    S -.-> K[(Caffeine cache)]
-    C -.errors.-> EH[controller/exception: CustomExceptionHandler]
-    Client --> UI[ui: SpaForwardingController] --> SPA[static React app]
+    Client([Client])
+    SEC[security: JwtAuthFilter, SecurityConfig]
+    C[controller: *ControllerImpl]
+    D[resource/delegate: validate + map]
+    S[[business/service: one per use case]]
+    R[repository/service]
+    DB[(H2 database)]
+    K{{Caffeine cache}}
+    EH>controller/exception: CustomExceptionHandler]
+    UI[ui: SpaForwardingController]
+    SPA[/static React app/]
+
+    Client --> SEC --> C --> D --> S --> R --> DB
+    S -.-> K
+    C -.errors.-> EH
+    Client --> UI --> SPA
+
+    classDef store fill:#dbeafe,stroke:#1d4ed8,color:#1e293b;
+    classDef cache fill:#fef3c7,stroke:#b45309,color:#1e293b;
+    classDef edge fill:#e2e8f0,stroke:#475569,color:#1e293b;
+    class DB store;
+    class K cache;
+    class Client,SPA,UI edge;
 ```
+
+Shapes: stadium = caller, cylinder = database, hexagon = cache, double-bordered box = application service, flag = error handling.
 
 Root package `com.todo`. Dependencies point inward-to-down only (controller -> delegate -> service -> repository). `com.todo.exception` may be used from any layer.
 
@@ -33,6 +49,7 @@ Root package `com.todo`. Dependencies point inward-to-down only (controller -> d
 
 ```mermaid
 sequenceDiagram
+    actor Client
     Client->>JwtAuthFilter: request + Bearer token
     JwtAuthFilter->>Controller: authenticated SecurityContext
     Controller->>Delegate: generated model
