@@ -25,6 +25,10 @@ The API is contract-first: endpoints and models are defined in an OpenAPI specif
 - **Web UI** (`frontend/`): responsive React app served by the same Spring Boot jar, usable on desktop and phone browsers. It covers registration, login and logout (with automatic return to login when the session expires); listing tasks with status and urgency filters, sorting, and an overdue highlight; creating and editing tasks; marking several tasks completed or deleting them at once; and a light, dark or system color theme that is remembered between visits.- **Deployment:** multi-stage Dockerfile and `docker-compose.yml` with a persistent data volume. The Maven build installs its own Node.js, builds the UI and bundles it into the jar.
 - **Tests:** backend unit and integration tests (services, caching, HTTP status codes, security) and frontend tests (Vitest, Testing Library, MSW).
 
+## Documentation
+
+Detailed, per-endpoint documentation (purpose, contract, rules and limits, Mermaid flow diagrams) is in [`docs/`](docs/INDEX.md): [auth API](docs/api/auth.md), [task API](docs/api/tasks.md), [errors](docs/api/errors.md) and [architecture](docs/architecture.md).
+
 ## Domain Model
 
 | Field | Values |

@@ -6,6 +6,10 @@
 
 Read `instructions/CODING_STANDARDS.md` **before** writing, modifying, refactoring or reviewing Java or frontend (TypeScript/React) code or tests, and apply it. Do not read it for tasks that don't touch code quality: answering questions, explaining code, git operations, documentation-only edits, or running builds and tests.
 
+## Documentation (load on demand)
+
+API and architecture docs live in `docs/` (Mermaid diagrams). Read `docs/INDEX.md` first (it routes to the one file you need) before changing or explaining an endpoint, the security rules, the cache or the layering. Update the matching doc in the same commit as the behavior change. Do not load `docs/` for unrelated tasks.
+
 ## Workflow rules
 
 - **Present choices as a selectable prompt:** whenever the user must pick between a few options (approaches, scope, commit approval, which item to do next), ask with `AskUserQuestion` so the choices are visible and selectable. Do not bury options in prose or end with an open "which do you prefer?". Put the recommended option first, marked "(Recommended)", and keep a free-text answer available through the built-in "Other" choice. Plain text questions are fine only for open-ended input that has no fixed options.
@@ -22,7 +26,7 @@ Read `instructions/CODING_STANDARDS.md` **before** writing, modifying, refactori
 ## Structure (`src/main/java/com/todo`)
 
 - `controller/` – REST controllers (`TaskControllerImpl`, `AuthControllerImpl`), `exception/` handler, `api/task_management.yaml` (OpenAPI spec, source of truth for the whole API: auth and tasks, including error shapes)
-- `exception/` (`com.todo.exception`) – custom exceptions usable from any layer; `CustomExceptionHandler` maps them: `ResourceNotFoundException` → 404 (missing, deleted or not-owned tasks), `UnauthorizedException` → 401 (invalid credentials), `IllegalArgumentException` and unreadable request bodies → 400, unknown paths (`NoResourceFoundException`) → 404, other `RuntimeException` → 500. A missing, invalid or expired token is rejected by the security entry point with 401
+- `exception/` (`com.todo.exception`) – custom exceptions usable from any layer; `CustomExceptionHandler` maps them to HTTP statuses (full table in `docs/api/errors.md`)
 - `business/` – `service/` (application services, one per use case), `domain/`, `model/` (DTOs), `config/` (cache)
 - `resource/` – `delegate/` (input validation and request/response mapping between controller and services), `mapper/`
 - `repository/` – JPA `entity/`, `mapper/`, `service/` (repositories)
@@ -37,8 +41,8 @@ Read `instructions/CODING_STANDARDS.md` **before** writing, modifying, refactori
 - **Data objects are not beans:** create DTOs, `Filter`, `PatchElement`, `Characteristic` and entities with `new`.
 - **One application service per use case**, with an `I`-prefixed interface (e.g. `IGetTaskByIdApplicationService`).
 - **User scoping:** resolve the current user via `IGetUserFromContextService`; task queries must filter by user id.
-- **Cache:** Caffeine cache `tasks` (`CacheConfig`), keyed per user and task id via `TaskCacheKeys` (`@Cacheable` on get, `@CachePut` on update, explicit eviction on delete). Always build keys with `TaskCacheKeys` so users never share entries, and keep all read/write paths consistent.
-- **Task updates:** `UpdateTaskCharacteristicsApplicationService` accepts only TITLE, DESCRIPTION, DUE_DATE, CREATED_AT, URGENCY, STATUS; anything else throws `IllegalArgumentException`. URGENCY and STATUS values are checked against `TaskConstants.URGENCY_VALUES` / `STATUS_VALUES` (kept in sync with the OpenAPI enums by `TaskConstantsTest`), date values must be ISO local date-times, and an empty DUE_DATE clears the due date. A description is optional on create.
+- **Cache:** always build keys with `TaskCacheKeys` so users never share entries, and keep get/update/delete paths consistent (details in `docs/api/tasks.md#cache`).
+- **Task updates:** allowed fields and value validation are in `docs/api/tasks.md#update`; keep `TaskConstants` in sync with the OpenAPI enums (`TaskConstantsTest`).
 - **Config:** `application.properties` points H2 at `/app/data/todo-db` (Docker path). Local runs use `--spring.profiles.active=dev` (own H2 file `./data/todo-dev` and a dev-only JWT secret); tests that start the context should override `spring.datasource.url` with an in-memory database.
 
 ## Commands
